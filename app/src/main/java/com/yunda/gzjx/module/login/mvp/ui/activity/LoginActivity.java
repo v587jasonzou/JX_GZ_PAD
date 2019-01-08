@@ -1,5 +1,6 @@
 package com.yunda.gzjx.module.login.mvp.ui.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.utils.utilcode.util.CacheDiskUtils;
 import com.jess.arms.utils.utilcode.util.StringUtils;
 import com.jess.arms.utils.utilcode.util.ToastUtils;
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
 import com.yunda.gzjx.module.login.di.component.DaggerLoginComponent;
@@ -33,6 +36,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.functions.Consumer;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -105,6 +109,16 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @OnClick(R.id.loginBtn)
     void login() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int i = 3/0;
+            }
+        }).start();
+        if (true) {
+            return;
+        }
+
         if (usernameText.getText() == null || StringUtils.isTrimEmpty(usernameText.getText().toString())) {
             ToastUtils.showShort("请输入用户名！");
             return;
@@ -190,6 +204,19 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        ButterKnife.bind(this);
+        final RxPermissions rxPermissions = new RxPermissions(this); // where this is an Activity or Fragment instance
+        rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Consumer<Permission>() {
+            @Override
+            public void accept(Permission permission) throws Exception {
+                if (permission.granted) {
+                    // `permission.name` is granted !
+                } else if (permission.shouldShowRequestPermissionRationale) {
+                    // Denied permission without ask never again
+                } else {
+                    // Denied permission with ask never again
+                    // Need to go to the settings
+                }
+            }
+        });
     }
 }

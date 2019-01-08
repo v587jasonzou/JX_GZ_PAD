@@ -10,7 +10,7 @@ import com.jess.arms.utils.ArmsUtils;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.yunda.gzjx.BuildConfig;
-import com.yunda.gzjx.crash.AndroidCrash;
+import com.yunda.gzjx.crash.CrashHandler;
 import com.yunda.gzjx.log.LoggerMaster;
 
 import butterknife.ButterKnife;
@@ -62,7 +62,7 @@ public class AppLifecyclesImpl implements AppLifecycles {
         /*日志库Logger初始化*/
         LoggerMaster.initLogger();
         /*崩溃日志收集*/
-        AndroidCrash.getInstance().init(application);
+        CrashHandler.getInstance().init(application);
     }
 
     @Override
