@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">广州检修Pad</string>
+    <string name="logo">成都运达科技股份有限公司</string>
+
+    <string name="app_fullname">广州检修管理系统</string>
+    <string name="setting">设置</string>
+    <string name="login_button">登录</string>
+</resources>
