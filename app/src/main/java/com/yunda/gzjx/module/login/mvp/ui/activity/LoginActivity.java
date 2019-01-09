@@ -1,8 +1,9 @@
 package com.yunda.gzjx.module.login.mvp.ui.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,10 +22,10 @@ import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.utils.utilcode.util.CacheDiskUtils;
 import com.jess.arms.utils.utilcode.util.StringUtils;
 import com.jess.arms.utils.utilcode.util.ToastUtils;
-import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
+import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.login.di.component.DaggerLoginComponent;
 import com.yunda.gzjx.module.login.mvp.contract.LoginContract;
 import com.yunda.gzjx.module.login.mvp.presenter.LoginPresenter;
@@ -36,7 +37,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.functions.Consumer;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -66,9 +66,11 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     Button loginBtn;
     @BindView(R.id.version)
     TextView version;
+    private boolean haveNeededPerm = true;
 
     PopupMenu popupMenu;
     List<String> users = new ArrayList<>();//历史登录用户
+    public static boolean isNeedReLogin = false;//是否需要重新登录
 
 
     @Override
@@ -109,16 +111,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @OnClick(R.id.loginBtn)
     void login() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i = 3/0;
-            }
-        }).start();
-        if (true) {
-            return;
-        }
-
         if (usernameText.getText() == null || StringUtils.isTrimEmpty(usernameText.getText().toString())) {
             ToastUtils.showShort("请输入用户名！");
             return;
@@ -148,6 +140,18 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         }else {
             ToastUtils.showShort("无保存用户信息");
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isNeedReLogin){
+            new AlertDialog.Builder(this).setTitle("提示！")
+                    .setMessage("当前用户登录已过期，请重新登录")
+                    .setPositiveButton("确定",null)
+                    .show();
+        }
+        isNeedReLogin = false;
     }
 
     @OnClick(R.id.settingTxv)
@@ -186,37 +190,38 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     }
 
     @Override
-    public void launchActivity(@NonNull Intent intent) {
-        checkNotNull(intent);
-        ArmsUtils.startActivity(intent);//整理activity
-    }
-
-    @Override
     public void killMyself() {
         finish();
     }
 
     @Override
     public void toMainActivity() {
-
+        ArmsUtils.startActivity(HomeActivity.class);
     }
+
+    @Override
+    public void requestNeededPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            haveNeededPerm = true;
+        } else {
+            RxPermissions rxPermissions = new RxPermissions(this); // where this is an Activity or Fragment instance
+            rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(granted -> {
+                if (granted) {
+                    // All requested permissions are granted
+                    haveNeededPerm = true;
+                } else {
+                    // At least one permission is denied
+                    haveNeededPerm = false;
+                }
+            });
+        }
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final RxPermissions rxPermissions = new RxPermissions(this); // where this is an Activity or Fragment instance
-        rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Consumer<Permission>() {
-            @Override
-            public void accept(Permission permission) throws Exception {
-                if (permission.granted) {
-                    // `permission.name` is granted !
-                } else if (permission.shouldShowRequestPermissionRationale) {
-                    // Denied permission without ask never again
-                } else {
-                    // Denied permission with ask never again
-                    // Need to go to the settings
-                }
-            }
-        });
+        requestNeededPermission();
     }
 }

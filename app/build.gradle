@@ -86,5 +86,17 @@ dependencies {
     /*图片选择器*/
     implementation 'com.github.lovetuzitong:MultiImageSelector:1.2'
 
+    /*通用刷新-加载控件*/
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-5'
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-5'
 
+    //  RxBinding
+    implementation 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+//    implementation 'com.jakewharton.rxbinding:rxbinding-support-v4:0.4.0'
+//    implementation 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+//    implementation 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.4.0'
+//    implementation 'com.jakewharton.rxbinding:rxbinding-design:0.4.0'
+
+    /*CardView*/
+    implementation rootProject.ext.dependencies["cardview-v7"]
 }

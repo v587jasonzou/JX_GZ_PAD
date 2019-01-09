@@ -88,19 +88,22 @@ public class LoginPresenter extends BasePresenter<LoginContract.Model, LoginCont
                                 }
                                 mRootView.toMainActivity();
                             }else {
-                                if(!StringUtils.isTrimEmpty(responseBody.getMessage())){
-                                    ToastUtils.showShort(responseBody.getMessage());
+                                SysInfo.cookieStore.clear();
+                                if(!StringUtils.isTrimEmpty(responseBody.getContent())){
+                                    ToastUtils.showShort(responseBody.getContent());
                                 }else {
                                     ToastUtils.showShort("登录失败请重试！");
                                 }
                             }
                         }else {
+                            SysInfo.cookieStore.clear();
                             ToastUtils.showShort("连接服务器失败，请重试");
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        SysInfo.cookieStore.clear();
                         mRootView.hideLoading();
                         ToastUtils.showShort("登录失败请重试！"+e.getMessage());
                     }

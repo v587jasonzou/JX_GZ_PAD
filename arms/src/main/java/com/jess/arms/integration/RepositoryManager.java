@@ -52,6 +52,7 @@ import retrofit2.Retrofit;
 @Singleton
 public class RepositoryManager implements IRepositoryManager {
 
+    private static Retrofit retrofit;
     @Inject
     Lazy<Retrofit> mRetrofit;
     @Inject
@@ -173,5 +174,10 @@ public class RepositoryManager implements IRepositoryManager {
     @Override
     public Context getContext() {
         return mApplication;
+    }
+
+    @Override
+    public void setRetrofit(Retrofit retrofit) {
+        RepositoryManager.retrofit = retrofit;
     }
 }

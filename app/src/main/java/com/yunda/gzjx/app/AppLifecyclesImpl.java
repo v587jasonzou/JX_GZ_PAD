@@ -26,7 +26,7 @@ import timber.log.Timber;
  * ================================================
  */
 public class AppLifecyclesImpl implements AppLifecycles {
-
+    private static Application application;
     @Override
     public void attachBaseContext(@NonNull Context base) {
         //          MultiDex.install(base);  //这里比 onCreate 先执行,常用于 MultiDex 初始化,插件化框架的初始化
@@ -34,6 +34,7 @@ public class AppLifecyclesImpl implements AppLifecycles {
 
     @Override
     public void onCreate(@NonNull Application application) {
+        AppLifecyclesImpl.application = application;
         if (LeakCanary.isInAnalyzerProcess(application)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -68,5 +69,9 @@ public class AppLifecyclesImpl implements AppLifecycles {
     @Override
     public void onTerminate(@NonNull Application application) {
 
+    }
+
+    public static Application getApplication() {
+        return application;
     }
 }

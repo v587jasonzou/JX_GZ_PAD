@@ -47,12 +47,23 @@
         <activity android:name=".module.login.mvp.ui.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- 重新登录请求处理 -->
+        <receiver android:name=".app.receive.LoginOutReceiver">
+            <intent-filter>
+                <action android:name="com.yunda.gzjx.timeout_to_login"/>
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".module.home.mvp.ui.activity.HomeActivity"/>
         <activity android:name=".module.me.mvp.ui.activity.MeActivity"/>
         <activity android:name=".module.message.mvp.ui.activity.ConversationsActivity"/>
         <activity android:name=".module.news.mvp.ui.activity.NewsActivity"/>
+        <activity android:name=".module.settings.mvp.ui.activity.SettingActivity">
+        </activity>
     </application>
 
 </manifest>

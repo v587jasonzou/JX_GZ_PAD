@@ -13,5 +13,5 @@ package com.yunda.gzjx.app;
  * ================================================
  */
 public interface EventBusTags {
-
+    public static final String NEED_TO_LOGIN = "need_to_login";
 }

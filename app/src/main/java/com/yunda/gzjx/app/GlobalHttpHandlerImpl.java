@@ -1,8 +1,10 @@
 package com.yunda.gzjx.app;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.jess.arms.http.GlobalHttpHandler;
+import com.yunda.gzjx.constant.ApiConstant;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -46,6 +48,11 @@ public class GlobalHttpHandlerImpl implements GlobalHttpHandler {
         response.body().close();
         如果使用 Okhttp 将新的请求, 请求成功后, 再将 Okhttp 返回的 Response return 出去即可
         如果不需要返回新的结果, 则直接把参数 response 返回出去即可*/
+        if(response.code()==ApiConstant.STATUS_NEED_TO_LOGIN){//token失效相关情况(未传递登录状态参数)...
+            Intent intent = new Intent();
+            intent.setAction(ApiConstant.ACTION_NEED_TO_LOGIN);
+            AppLifecyclesImpl.getApplication().sendBroadcast(intent);
+        }
         return response;
     }
 

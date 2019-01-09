@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jess.arms.base.delegate.AppLifecycles;
 import com.jess.arms.di.module.AppModule;
@@ -13,14 +14,23 @@ import com.jess.arms.di.module.GlobalConfigModule;
 import com.jess.arms.http.imageloader.glide.GlideImageLoaderStrategy;
 import com.jess.arms.http.log.RequestInterceptor;
 import com.jess.arms.integration.ConfigModule;
+import com.orhanobut.logger.Logger;
 import com.yunda.gzjx.BuildConfig;
-import com.yunda.gzjx.constant.ApiUrls;
+import com.yunda.gzjx.constant.ApiConstant;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.rx_cache2.internal.RxCache;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 
@@ -52,7 +62,7 @@ public final class GlobalConfiguration implements ConfigModule {
         builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
 
 
-        builder.baseurl(ApiUrls.BaseUrl)
+        builder.baseurl(ApiConstant.BaseUrl)
                 //强烈建议自己自定义图片加载逻辑, 因为 arms-imageloader-glide 提供的 GlideImageLoaderStrategy 并不能满足复杂的需求
                 //请参考 https://github.com/JessYanCoding/MVPArms/wiki#3.4
                 .imageLoaderStrategy(new GlideImageLoaderStrategy())
@@ -136,7 +146,34 @@ public final class GlobalConfiguration implements ConfigModule {
                         @Override
                         public void configOkhttp(@NonNull Context context, @NonNull OkHttpClient.Builder okhttpBuilder) {
                             //                    okhttpBuilder.sslSocketFactory(); //支持 Https, 详情请百度
-                            okhttpBuilder.writeTimeout(10, TimeUnit.SECONDS);
+                            okhttpBuilder.writeTimeout(30, TimeUnit.SECONDS);
+                            okhttpBuilder.connectTimeout(30,TimeUnit.SECONDS);
+                            okhttpBuilder.readTimeout(30,TimeUnit.SECONDS);
+                            okhttpBuilder.addInterceptor(new Interceptor() {
+                                @Override
+                                public Response intercept(Chain chain) throws IOException {
+                                    Request.Builder builder = chain.request().newBuilder();
+                                    builder.addHeader("Connection", "close");
+                                    return chain.proceed(builder.build());
+                                }
+                            });
+                            okhttpBuilder.followRedirects(false);
+                            okhttpBuilder .followSslRedirects(false);
+                            okhttpBuilder.cookieJar(new CookieJar() {//保存Cookie值,session保持
+                                @Override
+                                public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                                    if(SysInfo.cookieStore.get(url.host())==null||SysInfo.cookieStore.get(url.host()).size()==0){
+                                        Logger.json(new Gson().toJson(cookies));
+                                        SysInfo.cookieStore.put(url.host(), cookies);
+                                    }
+                                }
+
+                                @Override
+                                public List<Cookie> loadForRequest(HttpUrl url) {
+                                    List<Cookie> cookies = SysInfo.cookieStore.get(url.host());
+                                    return cookies != null ? cookies : new ArrayList<Cookie>();
+                                }
+                            });
                             if (BuildConfig.LOG_DEBUG) {//打印日志，使用OKHttp的日志库
                                 okhttpBuilder.addInterceptor(getHttpLoggingInterceptor());
                             }

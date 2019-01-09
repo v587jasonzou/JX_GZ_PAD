@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
+import com.jess.arms.utils.utilcode.util.FileUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -161,11 +163,11 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         pw.println(Build.MODEL);
         //CPU架构
         pw.print("CPU ABI: ");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            pw.println(Build.SUPPORTED_ABIS);
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            pw.println(Build.SUPPORTED_ABIS);
+//        } else {
             pw.println(Build.CPU_ABI);
-        }
+//        }
     }
 
     /**
@@ -173,5 +175,9 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     private void uploadExceptionToServer() {
 
+    }
+
+    public void clean(){
+        FileUtils.deleteDir(PATH);
     }
 }

@@ -1,19 +1,30 @@
 package com.yunda.gzjx.entity;
 
 import java.io.Serializable;
-import java.util.Map;
 
-/**根据实际义务需求更改
+/**
+ * 根据实际义务需求更改
+ *
  * @param <T>
  */
 public class BaseResponse<T> implements Serializable {
     private Boolean success;
     private T data;
-    private T entity;
-    private Integer totalProperty;
-    private String id;
+    private String content;
+    //    private T entity;
     private String message;
-    private Map<String,String> iamges;
+    //    private String id;
+    //    private Integer totalProperty;
+    //    private Map<String,String> iamges;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
 
     public Boolean getSuccess() {
         return success;
@@ -31,43 +42,11 @@ public class BaseResponse<T> implements Serializable {
         this.data = data;
     }
 
-    public T getEntity() {
-        return entity;
+    public String getContent() {
+        return content;
     }
 
-    public void setEntity(T entity) {
-        this.entity = entity;
-    }
-
-    public Integer getTotalProperty() {
-        return totalProperty;
-    }
-
-    public void setTotalProperty(Integer totalProperty) {
-        this.totalProperty = totalProperty;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Map<String, String> getIamges() {
-        return iamges;
-    }
-
-    public void setIamges(Map<String, String> iamges) {
-        this.iamges = iamges;
+    public void setContent(String content) {
+        this.content = content;
     }
 }
