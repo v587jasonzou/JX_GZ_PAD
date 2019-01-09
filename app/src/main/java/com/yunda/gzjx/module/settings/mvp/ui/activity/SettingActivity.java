@@ -32,6 +32,8 @@ import butterknife.BindView;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -56,8 +58,6 @@ public class SettingActivity extends BaseActivity<SettingPresenter> implements S
     @BindView(R.id.cvChangeServer)
     CardView cvChangeServer;
 
-    @Inject
-    Retrofit.Builder builder;
     @Inject
     OkHttpClient okHttpClient;
     @Inject
@@ -147,13 +147,10 @@ public class SettingActivity extends BaseActivity<SettingPresenter> implements S
                     .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     .serializeNulls()
                     .create();
-//            repositoryManager.setRetrofit(new Retrofit.Builder().baseUrl(apiUrl).client(okHttpClient)
-//                                        .addConverterFactory(ScalarsConverterFactory.create())
-//                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//                    .addConverterFactory(GsonConverterFactory.create(gson))
-//                    .build());
 
-            repositoryManager.setRetrofit(builder.baseUrl(apiUrl)
+            repositoryManager.setRetrofit(new Retrofit.Builder().baseUrl(apiUrl)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build());
             ToastUtils.showShort("修改成功");
             finish();
