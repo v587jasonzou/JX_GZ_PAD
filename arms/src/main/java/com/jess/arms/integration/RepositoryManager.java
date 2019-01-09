@@ -121,17 +121,23 @@ public class RepositoryManager implements IRepositoryManager {
      * @return ApiService
      */
     private <T> T getRetrofitService(Class<T> serviceClass) {
-        if (mRetrofitServiceCache == null) {
-            mRetrofitServiceCache = mCachefactory.build(CacheType.RETROFIT_SERVICE_CACHE);
+        // TODO: 2019/1/9 添加到缓存中...
+        if (retrofit!=null){//在Retrofit实例生成后，修改了服务器地址
+            return retrofit.create(serviceClass);
+        }else {
+            if (mRetrofitServiceCache == null) {
+                mRetrofitServiceCache = mCachefactory.build(CacheType.RETROFIT_SERVICE_CACHE);
+            }
+            Preconditions.checkNotNull(mRetrofitServiceCache,
+                    "Cannot return null from a Cache.Factory#build(int) method");
+            T retrofitService = (T) mRetrofitServiceCache.get(serviceClass.getCanonicalName());
+            if (retrofitService == null) {
+                retrofitService = mRetrofit.get().create(serviceClass);
+                mRetrofitServiceCache.put(serviceClass.getCanonicalName(), retrofitService);
+            }
+            return retrofitService;
         }
-        Preconditions.checkNotNull(mRetrofitServiceCache,
-                "Cannot return null from a Cache.Factory#build(int) method");
-        T retrofitService = (T) mRetrofitServiceCache.get(serviceClass.getCanonicalName());
-        if (retrofitService == null) {
-            retrofitService = mRetrofit.get().create(serviceClass);
-            mRetrofitServiceCache.put(serviceClass.getCanonicalName(), retrofitService);
-        }
-        return retrofitService;
+
     }
 
     private <T> Method getRetrofitMethod(T service, Method method) throws NoSuchMethodException {

@@ -8,7 +8,8 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
-import com.jess.arms.utils.utilcode.util.FileUtils;
+
+import com.blankj.utilcode.util.FileUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;

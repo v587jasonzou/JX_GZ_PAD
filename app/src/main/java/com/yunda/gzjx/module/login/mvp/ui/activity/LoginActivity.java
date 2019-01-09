@@ -16,12 +16,12 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.CacheDiskUtils;
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
-import com.jess.arms.utils.utilcode.util.CacheDiskUtils;
-import com.jess.arms.utils.utilcode.util.StringUtils;
-import com.jess.arms.utils.utilcode.util.ToastUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
@@ -29,6 +29,7 @@ import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.login.di.component.DaggerLoginComponent;
 import com.yunda.gzjx.module.login.mvp.contract.LoginContract;
 import com.yunda.gzjx.module.login.mvp.presenter.LoginPresenter;
+import com.yunda.gzjx.module.settings.mvp.ui.activity.SettingActivity;
 import com.yunda.gzjx.view.ClearEditText;
 import com.zhy.autolayout.AutoLinearLayout;
 
@@ -156,8 +157,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @OnClick(R.id.settingTxv)
     void toSetting() {
-//        ArmsUtils.startActivity(new Intent(this, ChangeServerActivity.class));
-        ToastUtils.showShort("toSetting");
+        ArmsUtils.startActivity(SettingActivity.class);
     }
 
     @Override

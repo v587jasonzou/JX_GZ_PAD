@@ -2,14 +2,14 @@ package com.yunda.gzjx.module.login.mvp.presenter;
 
 import android.app.Application;
 
+import com.blankj.utilcode.util.CacheDiskUtils;
+import com.blankj.utilcode.util.ObjectUtils;
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.jess.arms.di.scope.ActivityScope;
 import com.jess.arms.http.imageloader.ImageLoader;
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.mvp.BasePresenter;
-import com.jess.arms.utils.utilcode.util.CacheDiskUtils;
-import com.jess.arms.utils.utilcode.util.ObjectUtils;
-import com.jess.arms.utils.utilcode.util.StringUtils;
-import com.jess.arms.utils.utilcode.util.ToastUtils;
 import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.login.mvp.contract.LoginContract;

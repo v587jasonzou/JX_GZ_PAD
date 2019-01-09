@@ -56,7 +56,7 @@ dependencies {
     annotationProcessor(rootProject.ext.dependencies["butterknife-compiler"]) {
         exclude module: 'support-annotations'
     }
-    
+
     //tools
     annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
 
@@ -99,4 +99,5 @@ dependencies {
 
     /*CardView*/
     implementation rootProject.ext.dependencies["cardview-v7"]
+    implementation project(':utilcode')
 }

@@ -4,9 +4,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.StringUtils;
 import com.jess.arms.base.BaseHolder;
 import com.jess.arms.base.DefaultAdapter;
-import com.jess.arms.utils.utilcode.util.StringUtils;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.module.login.repository.entity.MenuSimpleBean;
 

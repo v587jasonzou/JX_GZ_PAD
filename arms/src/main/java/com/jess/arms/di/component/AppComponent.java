@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Singleton;
 import me.jessyan.rxerrorhandler.core.RxErrorHandler;
 import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
 
 /**
  * ================================================
@@ -96,6 +97,14 @@ public interface AppComponent {
      * @return {@link OkHttpClient}
      */
     OkHttpClient okHttpClient();
+
+
+    /**
+     * 支持对某一项配置进行修改
+     *
+     * @return
+     */
+    Retrofit.Builder retrofitBuilder();
 
     /**
      * Json 序列化库
