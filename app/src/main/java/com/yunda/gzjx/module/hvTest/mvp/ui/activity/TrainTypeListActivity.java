@@ -74,6 +74,7 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
     @Override
     public int initView(@Nullable Bundle savedInstanceState) {
         return R.layout.activity_train_type_list; //如果你不需要框架帮你设置 setContentView(id) 需要自行设置,请返回 0
+
     }
 
     @Override
