@@ -10,7 +10,6 @@ import java.io.Serializable;
 public class BaseResponse<T> implements Serializable {
     private Boolean success;
     private T data;
-    private String content;
     //    private T entity;
     private String message;
     //    private String id;
@@ -40,13 +39,5 @@ public class BaseResponse<T> implements Serializable {
 
     public void setData(T data) {
         this.data = data;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 }

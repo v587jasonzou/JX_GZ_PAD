@@ -62,7 +62,9 @@
         <activity android:name=".module.me.mvp.ui.activity.MeActivity"/>
         <activity android:name=".module.message.mvp.ui.activity.ConversationsActivity"/>
         <activity android:name=".module.news.mvp.ui.activity.NewsActivity"/>
-        <activity android:name=".module.settings.mvp.ui.activity.SettingActivity">
+        <activity android:name=".module.settings.mvp.ui.activity.SettingActivity"/>
+        <activity android:name=".module.hvTest.mvp.ui.activity.TrainTypeListActivity"/>
+        <activity android:name=".module.hvTest.mvp.ui.activity.HVTestBaseInfoActivity">
         </activity>
     </application>
 

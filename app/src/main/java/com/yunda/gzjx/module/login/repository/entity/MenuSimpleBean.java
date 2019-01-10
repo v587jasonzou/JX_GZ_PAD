@@ -13,6 +13,16 @@ public class MenuSimpleBean implements Serializable {
     @SerializedName("menuName")
     private String menu;
     private String loginClient;
+    @SerializedName("idx")
+    private String relationIdx;
+
+    public String getRelationIdx() {
+        return relationIdx;
+    }
+
+    public void setRelationIdx(String relationIdx) {
+        this.relationIdx = relationIdx;
+    }
 
     public String getMenu() {
         return menu;

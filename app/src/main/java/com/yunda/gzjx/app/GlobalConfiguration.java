@@ -55,11 +55,11 @@ public final class GlobalConfiguration implements ConfigModule {
 
     @Override
     public void applyOptions(Context context, GlobalConfigModule.Builder builder) {
-//        不适合列表的打印
-//        if (!BuildConfig.LOG_DEBUG) { //Release 时, 让框架不再打印 Http 请求和响应的信息
-//            builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
-//        }
-        builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
+    //  类似于Logger库的打印，不适合列表的打印
+        if (!BuildConfig.LOG_DEBUG) { //Release 时, 让框架不再打印 Http 请求和响应的信息
+            builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
+        }
+//        builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
 
 
         builder.baseurl(ApiConstant.BaseUrl)

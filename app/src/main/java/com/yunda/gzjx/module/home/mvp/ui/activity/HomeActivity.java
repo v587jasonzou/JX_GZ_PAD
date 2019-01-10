@@ -31,6 +31,7 @@ import com.yunda.gzjx.module.home.di.module.HomeModule;
 import com.yunda.gzjx.module.home.mvp.adapter.HomeMenuAdapter;
 import com.yunda.gzjx.module.home.mvp.contract.HomeContract;
 import com.yunda.gzjx.module.home.mvp.presenter.HomePresenter;
+import com.yunda.gzjx.module.hvTest.mvp.ui.activity.TrainTypeListActivity;
 import com.yunda.gzjx.module.login.repository.entity.MenuSimpleBean;
 
 import java.util.List;
@@ -114,8 +115,14 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int viewType, Object data, int position) {
-                if (SysInfo.menus.get(position).getMenu().equals("配件下车登记")) {
-                    //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, PartsRecanditionActivity.class));
+                if (SysInfo.menus.get(position).getMenu().equals("高压试验")) {
+                    if (data instanceof MenuSimpleBean) {
+                        MenuSimpleBean menu = (MenuSimpleBean) data;
+                        Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
+//                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
+                        ArmsUtils.startActivity(intent);
+                    }
+
                 } else if (SysInfo.menus.get(position).getMenu().equals("配件接收登记")) {
                     //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, GetParstListActivity.class));
                 } else if (SysInfo.menus.get(position).getMenu().equals("配件上车登记")) {
@@ -174,12 +181,6 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         ToastUtils.showShort("获取权限成功");
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SysInfo.cookieStore.clear();
-    }
-
     @OnClick(R.id.tvChangeUser)
     void CheckUser() {
         new AlertDialog.Builder(this).setTitle("提示！").setMessage("确定退出当前用户？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -193,6 +194,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     @Override
     public void OnLoadFaild(String msg) {
         hideLoading();
+        srRefresh.finishRefresh();
         ToastUtils.showShort(msg);
     }
 

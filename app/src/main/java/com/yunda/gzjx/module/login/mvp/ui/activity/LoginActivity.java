@@ -23,7 +23,9 @@ import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yunda.gzjx.BuildConfig;
 import com.yunda.gzjx.R;
+import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
 import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.login.di.component.DaggerLoginComponent;
@@ -91,6 +93,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         if (list != null && list.size() > 0) {
             users.addAll(list);
         }
+
+        version.setText(BuildConfig.VERSION_NAME);
+
 
         usernameText.setText("wangdajun");
         passwordText.setText("000000");
@@ -217,11 +222,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         }
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SysInfo.cookieStore.clear();
         requestNeededPermission();
     }
 }

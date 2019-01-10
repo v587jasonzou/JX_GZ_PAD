@@ -89,8 +89,8 @@ public class LoginPresenter extends BasePresenter<LoginContract.Model, LoginCont
                                 mRootView.toMainActivity();
                             }else {
                                 SysInfo.cookieStore.clear();
-                                if(!StringUtils.isTrimEmpty(responseBody.getContent())){
-                                    ToastUtils.showShort(responseBody.getContent());
+                                if(!StringUtils.isTrimEmpty(responseBody.getMessage())){
+                                    ToastUtils.showShort(responseBody.getMessage());
                                 }else {
                                     ToastUtils.showShort("登录失败请重试！");
                                 }

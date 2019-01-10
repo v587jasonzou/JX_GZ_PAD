@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/jxRecords"
+        android:title="检修记录"
+        android:icon="@mipmap/logo_icon"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/materialList"
+        android:title="物料清单"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/progressUpload"
+        android:title="过程报活"
+        app:showAsAction="never"/>
+</menu>
