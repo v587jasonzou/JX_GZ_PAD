@@ -102,6 +102,7 @@ dependencies {
 
     /*Retrofit2配置*/
     implementation rootProject.ext.dependencies["retrofit-converter-gson"]
+    implementation rootProject.ext.dependencies["retrofit-converter-scalars"]
     implementation rootProject.ext.dependencies["retrofit-adapter-rxjava2"]
 
     implementation project(':utilcode')

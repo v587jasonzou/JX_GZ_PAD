@@ -10,6 +10,8 @@ import com.jess.arms.di.scope.ActivityScope;
 import com.jess.arms.http.imageloader.ImageLoader;
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.mvp.BasePresenter;
+import com.jess.arms.utils.RxLifecycleUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.login.mvp.contract.LoginContract;
@@ -56,7 +58,7 @@ public class LoginPresenter extends BasePresenter<LoginContract.Model, LoginCont
     }
 
     public void login(String username,String password,boolean isSave){
-        mModel.Login(username,password).observeOn(AndroidSchedulers.mainThread())
+        mModel.Login(username,password).compose(RxLifecycleUtils.bindUntilEvent(mRootView,ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BaseResponse<LoginRes>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -105,6 +107,12 @@ public class LoginPresenter extends BasePresenter<LoginContract.Model, LoginCont
                     public void onError(Throwable e) {
                         SysInfo.cookieStore.clear();
                         mRootView.hideLoading();
+
+                        // TODO: 2019/1/16 debug
+                        if (true) {
+                            mRootView.toMainActivity();
+                        }
+
                         ToastUtils.showShort("登录失败请重试！"+e.getMessage());
                     }
 

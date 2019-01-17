@@ -24,6 +24,5 @@ public interface LoginContract {
     interface Model extends IModel {
         Observable<BaseResponse<LoginRes>> Login(String username, String password);
 
-        Observable<BaseResponse> LoginFirst(String username, String password);
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="5dp">
+
+    <TextView
+        android:id="@+id/tv_jx_pos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="I端:"/>
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:id="@+id/et_jx_pos_condition"
+        android:background="@drawable/bg_edittext_normal"
+        android:ellipsize="end"
+        android:textColor="@color/text_color"
+        android:lines="1"
+        android:text=""/>
+    <TextView
+        android:id="@+id/unit"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:text="¥"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

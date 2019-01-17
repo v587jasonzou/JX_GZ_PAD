@@ -33,6 +33,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * ================================================
@@ -139,7 +140,8 @@ public final class GlobalConfiguration implements ConfigModule {
                 .retrofitConfiguration(new ClientModule.RetrofitConfiguration() {
                         @Override
                         public void configRetrofit(@NonNull Context context, @NonNull Retrofit.Builder retrofitBuilder) {//这里可以自己自定义配置 Retrofit 的参数, 甚至您可以替换框架配置好的 OkHttpClient 对象 (但是不建议这样做, 这样做您将损失框架提供的很多功能)
-                            //                    retrofitBuilder.addConverterFactory(FastJsonConverterFactory.create());//比如使用 FastJson 替代 Gson
+//                                                retrofitBuilder.addConverterFactory(FastJsonConverterFactory.create());//比如使用 FastJson 替代 Gson
+                            retrofitBuilder.addConverterFactory(ScalarsConverterFactory.create());//直接获取String
                         }
                     })
                 .okhttpConfiguration(new ClientModule.OkhttpConfiguration() {

@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
-import com.orhanobut.logger.Logger;
 import com.yunda.gzjx.R;
+import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.hvTest.di.component.DaggerHVTestBaseInfoComponent;
 import com.yunda.gzjx.module.hvTest.entry.TrainType;
 import com.yunda.gzjx.module.hvTest.mvp.contract.HVTestBaseInfoContract;
@@ -74,7 +74,6 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
         itemData = (TrainType) getIntent().getSerializableExtra("itemData");
-        Logger.d(itemData);
         setSupportActionBar(menuTp);
         menuTp.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +129,7 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
 
     @OnClick(R.id.jxRecords)
     public void onJxRecordsClicked() {
+        toJXProjectsListAct();
     }
 
     @OnClick(R.id.materialList)
@@ -150,6 +150,7 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.jxRecords:
+                toJXProjectsListAct();
                 Toast.makeText(this, "检修记录", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.materialList:
@@ -160,5 +161,13 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void toJXProjectsListAct() {
+        Intent intent = new Intent(this,JXRecordProjectsActivity.class);
+        intent.putExtra("trainIDX", itemData.getIdx());//机车IDX
+        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//菜单项relationIdx
+        ArmsUtils.startActivity(intent);
     }
 }

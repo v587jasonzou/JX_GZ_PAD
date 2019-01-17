@@ -79,6 +79,7 @@ public class HomePresenter extends BasePresenter<HomeContract.Model, HomeContrac
 
             @Override
             public void onError(Throwable e) {
+                e.printStackTrace();
                 mRootView.OnLoadFaild("获取当前用户信息失败，请检查网络重试" + e.getMessage());
             }
 

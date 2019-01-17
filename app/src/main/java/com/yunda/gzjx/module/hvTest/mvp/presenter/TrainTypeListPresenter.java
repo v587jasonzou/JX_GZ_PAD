@@ -6,6 +6,8 @@ import com.jess.arms.di.scope.ActivityScope;
 import com.jess.arms.http.imageloader.ImageLoader;
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.mvp.BasePresenter;
+import com.jess.arms.utils.RxLifecycleUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.hvTest.entry.TrainType;
 import com.yunda.gzjx.module.hvTest.mvp.contract.TrainTypeListContract;
@@ -45,7 +47,7 @@ public class TrainTypeListPresenter extends BasePresenter<TrainTypeListContract.
         this.mApplication = null;
     }
     public void getTrainList(){
-        mModel.getTrainList().observeOn(AndroidSchedulers.mainThread())
+        mModel.getTrainList().compose(RxLifecycleUtils.bindUntilEvent(mRootView,ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<BaseResponse<List<TrainType>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {

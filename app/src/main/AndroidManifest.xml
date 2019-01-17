@@ -66,6 +66,10 @@
         <activity android:name=".module.hvTest.mvp.ui.activity.TrainTypeListActivity"/>
         <activity android:name=".module.hvTest.mvp.ui.activity.HVTestBaseInfoActivity">
         </activity>
+        <activity android:name=".module.hvTest.mvp.ui.activity.JXRecordProjectsActivity">
+        </activity>
+        <activity android:name=".module.hvTest.mvp.ui.activity.JXTasksOfProjectActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.base.DefaultAdapter;
 import com.jess.arms.di.component.AppComponent;
@@ -26,6 +28,7 @@ import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.app.SysInfo;
+import com.yunda.gzjx.app.utils.ProgressDialogUtils;
 import com.yunda.gzjx.module.home.di.component.DaggerHomeComponent;
 import com.yunda.gzjx.module.home.di.module.HomeModule;
 import com.yunda.gzjx.module.home.mvp.adapter.HomeMenuAdapter;
@@ -64,6 +67,12 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     SmartRefreshLayout srRefresh;
     HomeMenuAdapter adapter;
     boolean mBackKeyPressed = false;
+
+    public static String getCurRelationIdx() {
+        return curRelationIdx;
+    }
+
+    private static String curRelationIdx = null;//首页当前选中的菜单项 - 其他界面会取值
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -118,6 +127,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
                 if (SysInfo.menus.get(position).getMenu().equals("高压试验")) {
                     if (data instanceof MenuSimpleBean) {
                         MenuSimpleBean menu = (MenuSimpleBean) data;
+                        curRelationIdx = menu.getRelationIdx();
                         Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
 //                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
                         ArmsUtils.startActivity(intent);
@@ -139,12 +149,12 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
 
     @Override
     public void showLoading() {
-        //ProgressDialogUtils.showProgressDialog(this, "加载中...");
+        ProgressDialogUtils.showProgressDialog(this, "加载中...");
     }
 
     @Override
     public void hideLoading() {
-//        ProgressDialogUtils.dismissProgressDialog();
+        ProgressDialogUtils.dismissProgressDialog();
     }
 
     @Override
@@ -196,6 +206,12 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         hideLoading();
         srRefresh.finishRefresh();
         ToastUtils.showShort(msg);
+
+        // TODO: 2019/1/16 debug
+        if (true) {
+            String s ="[\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"14e6ebe3439f44e38ae3ef2ff76e444c\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"c4208e93a2eb4027b13b8cb16d0854b2\",\n" + "            \"relationName\": \"高压试验\",\n" + "            \"menuUrl\": \"http://360\",\n" + "            \"menuName\": \"高压试验\"\n" + "        },\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"2d65f419da1c4e73872a744cb518a803\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"03d8a3d0247f404f8b140d0f43e42725\",\n" + "            \"relationName\": \"低压试验\",\n" + "            \"menuUrl\": \"http://souhu.com\",\n" + "            \"menuName\": \"低压试验\"\n" + "        },\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"ab387afc1e89410995f9cdb48e6aac47\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"68e9ddbeb3a74e63a6a9f53d072ce599\",\n" + "            \"relationName\": \"称重试验\",\n" + "            \"menuUrl\": \"cdsdscdscdacds\",\n" + "            \"menuName\": \"称重试验\"\n" + "        }\n" + "    ]";
+            getMenuSuccess(new GsonBuilder().create().fromJson(s,new TypeToken<List<MenuSimpleBean>>(){}.getType()));
+        }
     }
 
     @Override

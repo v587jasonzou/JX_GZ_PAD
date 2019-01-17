@@ -18,6 +18,8 @@ package com.jess.arms.di.component;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.jess.arms.base.delegate.AppDelegate;
 import com.jess.arms.di.module.AppModule;
@@ -30,14 +32,16 @@ import com.jess.arms.integration.ConfigModule;
 import com.jess.arms.integration.IRepositoryManager;
 import com.jess.arms.integration.cache.Cache;
 import com.jess.arms.utils.ArmsUtils;
-import dagger.BindsInstance;
-import dagger.Component;
+
 import java.io.File;
 import java.util.concurrent.ExecutorService;
+
 import javax.inject.Singleton;
+
+import dagger.BindsInstance;
+import dagger.Component;
 import me.jessyan.rxerrorhandler.core.RxErrorHandler;
 import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
 
 /**
  * ================================================
@@ -98,13 +102,13 @@ public interface AppComponent {
      */
     OkHttpClient okHttpClient();
 
-
     /**
-     * 支持对某一项配置进行修改
+     * 获取用户配置的Retrofit
      *
      * @return
      */
-    Retrofit.Builder retrofitBuilder();
+    @Nullable
+    ClientModule.RetrofitConfiguration retrofitConfiguration();
 
     /**
      * Json 序列化库

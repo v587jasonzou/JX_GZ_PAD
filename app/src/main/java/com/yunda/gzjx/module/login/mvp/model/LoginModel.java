@@ -46,10 +46,4 @@ public class LoginModel extends BaseModel implements LoginContract.Model {
         return mRepositoryManager.obtainRetrofitService(LoginApi.class).Login(username,password)
                 .subscribeOn(Schedulers.io());
     }
-
-    @Override
-    public Observable<BaseResponse> LoginFirst(String username, String password) {
-        return mRepositoryManager.obtainRetrofitService(LoginApi.class).LoginFirst(username,password,"mobile")
-                .subscribeOn(Schedulers.io());
-    }
 }

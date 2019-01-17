@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- (检修 - 作业项目) -->
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="4dp"
+        app:contentPaddingBottom="12dp"
+        app:contentPaddingLeft="18dp"
+        app:contentPaddingRight="18dp"
+        app:contentPaddingTop="12dp">
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/task"/>
+
+                <TextView
+                    android:id="@+id/tv_task_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingTop="2dp"
+                    android:text="2500V兆欧表（或绝缘测试仪）测量车顶原边电路（受电弓、高压隔离开关，高压绝缘子、避雷器、接地开关）对地绝缘电阻值≥5MΩ"
+                    android:textColor="@color/title_text_color"
+                    android:textSize="@dimen/text_size_16"/>
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="作业情况："
+                            android:textColor="@color/text_color"
+                            android:textSize="16sp"/>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_task_condition"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="top|left"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="right"
+                            android:text="作业者"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/text_size_16"/>
+
+                        <TextView
+                            android:id="@+id/tv_handle_man"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:text="张三　2018-07-09 16：34 "
+                            android:textSize="@dimen/text_size_16"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="right"
+                            android:text="互检"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/text_size_16"/>
+
+                        <RadioGroup
+                            android:id="@+id/checkEachother"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="5dp">
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/checkEachotherOk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="合格"/>
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/checkEachotherNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="不合格"/>
+                        </RadioGroup>
+
+                        <TextView
+                            android:id="@+id/tv_check_eachother"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:text="张三　2018-07-09 16：34 "
+                            android:textSize="@dimen/text_size_16"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="right"
+                            android:text="工长"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/text_size_16"/>
+
+                        <RadioGroup
+                            android:id="@+id/workerLeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="5dp">
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/workerLeaderOk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="合格"/>
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/workerLeaderNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="不合格"/>
+                        </RadioGroup>
+
+                        <TextView
+                            android:id="@+id/tv_work_leader_check_res"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:text="张三　2018-07-09 16：34 "
+                            android:textSize="@dimen/text_size_16"
+                            android:visibility="gone"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="right"
+                            android:text="验收"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/text_size_16"/>
+
+                        <RadioGroup
+                            android:id="@+id/acceptanceCheck"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="5dp">
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/acceptanceCheckOk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="合格"/>
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/acceptanceCheckNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="不合格"/>
+                        </RadioGroup>
+
+                        <TextView
+                            android:id="@+id/tv_acceptance_check_res"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:text="张三　2018-07-09 16：34 "
+                            android:textSize="@dimen/text_size_16"
+                            android:visibility="gone"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="right"
+                            android:text="质检"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/text_size_16"/>
+
+                        <RadioGroup
+                            android:id="@+id/qualityCheck"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="5dp">
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/qualityCheckOk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="合格"/>
+
+                            <android.support.v7.widget.AppCompatRadioButton
+                                android:id="@+id/qualityCheckNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="不合格"/>
+                        </RadioGroup>
+
+                        <TextView
+                            android:id="@+id/tv_quality_check_res"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:text="张三　2018-07-09 16：34 "
+                            android:textSize="@dimen/text_size_16"
+                            android:visibility="gone"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注："
+                    android:layout_gravity="top"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/text_size_16"/>
+
+                <EditText
+                    android:id="@+id/et_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_edittext_normal"
+                    android:gravity="top|left"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textSize="@dimen/text_size_16"/>
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rg_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/rb_saveSingle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_radiobutton"
+                    android:button="@null"
+                    android:padding="8dp"
+                    android:text="保存"
+                    android:textColor="@color/selector_radiobutton"/>
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/rb_saveLater"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/selector_radiobutton"
+                    android:button="@null"
+                    android:padding="8dp"
+                    android:text="稍后保存"
+                    android:textColor="@color/selector_radiobutton"/>
+            </RadioGroup>
+
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+    </android.support.v7.widget.CardView>
+</com.zhy.autolayout.AutoLinearLayout>

@@ -1,5 +1,6 @@
 package com.yunda.gzjx.module.settings.mvp.ui.activity;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,9 +19,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
+import com.jess.arms.di.module.ClientModule;
 import com.jess.arms.integration.IRepositoryManager;
 import com.jess.arms.utils.ArmsUtils;
 import com.yunda.gzjx.R;
+import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.constant.ApiConstant;
 import com.yunda.gzjx.module.settings.di.component.DaggerSettingComponent;
 import com.yunda.gzjx.module.settings.mvp.contract.SettingContract;
@@ -58,10 +61,17 @@ public class SettingActivity extends BaseActivity<SettingPresenter> implements S
     @BindView(R.id.cvChangeServer)
     CardView cvChangeServer;
 
+    /**
+     * @see com.yunda.gzjx.app.GlobalConfiguration
+     * @see ClientModule
+     */
     @Inject
-    OkHttpClient okHttpClient;
+    OkHttpClient okHttpClient;//注解全局配置中的okhttpclient
     @Inject
     IRepositoryManager repositoryManager;
+    @Inject
+    @Nullable
+    ClientModule.RetrofitConfiguration configuration;//@Nullable 和 @Provide方法的注解一致
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -148,10 +158,20 @@ public class SettingActivity extends BaseActivity<SettingPresenter> implements S
                     .serializeNulls()
                     .create();
 
-            repositoryManager.setRetrofit(new Retrofit.Builder().baseUrl(apiUrl)
+            /**
+             * 参考修改
+             * @see com.jess.arms.di.module.ClientModule#provideRetrofit(Application, ClientModule.RetrofitConfiguration, Retrofit.Builder, OkHttpClient, HttpUrl, Gson)
+             */
+            Retrofit.Builder builder = new Retrofit.Builder();
+            builder.baseUrl(apiUrl)
+                    .client(okHttpClient)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build());
+                    .addConverterFactory(GsonConverterFactory.create(gson));
+            if (configuration != null)
+                configuration.configRetrofit(getApplication(), builder);
+            repositoryManager.setRetrofit(builder.build());
+            SysInfo.cookieStore.clear();//清除session缓存
+
             ToastUtils.showShort("修改成功");
             finish();
         }
