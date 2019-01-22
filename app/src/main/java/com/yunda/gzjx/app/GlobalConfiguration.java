@@ -148,9 +148,9 @@ public final class GlobalConfiguration implements ConfigModule {
                         @Override
                         public void configOkhttp(@NonNull Context context, @NonNull OkHttpClient.Builder okhttpBuilder) {
                             //                    okhttpBuilder.sslSocketFactory(); //支持 Https, 详情请百度
-                            okhttpBuilder.writeTimeout(30, TimeUnit.SECONDS);
-                            okhttpBuilder.connectTimeout(30,TimeUnit.SECONDS);
-                            okhttpBuilder.readTimeout(30,TimeUnit.SECONDS);
+                            okhttpBuilder.writeTimeout(10, TimeUnit.SECONDS);
+                            okhttpBuilder.connectTimeout(10,TimeUnit.SECONDS);
+                            okhttpBuilder.readTimeout(10,TimeUnit.SECONDS);
                             okhttpBuilder.addInterceptor(new Interceptor() {
                                 @Override
                                 public Response intercept(Chain chain) throws IOException {

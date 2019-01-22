@@ -334,7 +334,7 @@
                     android:textSize="@dimen/text_size_16"/>
             </LinearLayout>
 
-            <RadioGroup
+            <LinearLayout
                 android:id="@+id/rg_save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -342,17 +342,16 @@
                 android:gravity="right"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatRadioButton
+                <Button
                     android:id="@+id/rb_saveSingle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_radiobutton"
-                    android:button="@null"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bg_btn_uncheck"
                     android:padding="8dp"
                     android:text="保存"
-                    android:textColor="@color/selector_radiobutton"/>
+                    />
 
-                <android.support.v7.widget.AppCompatRadioButton
+                <CheckBox
                     android:id="@+id/rb_saveLater"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -361,8 +360,9 @@
                     android:button="@null"
                     android:padding="8dp"
                     android:text="稍后保存"
-                    android:textColor="@color/selector_radiobutton"/>
-            </RadioGroup>
+                    android:textColor="@color/selector_radiobutton"
+                    />
+            </LinearLayout>
 
 
         </com.zhy.autolayout.AutoLinearLayout>

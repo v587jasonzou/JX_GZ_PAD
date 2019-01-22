@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jess.arms.base.BaseActivity;
-import com.jess.arms.base.DefaultAdapter;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -46,8 +45,8 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
 
 /**
  * ================================================
- * Description: 菜单 ->高压试验 -> 机车列表 -> 检修记录 -> 作业项目列表 -> 任务列表
- *
+ * Description:
+ *（检修记录列表页面）
  * @author 邹旭
  * ================================================
  */
@@ -63,6 +62,7 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
     private List<JXTask> jxTasks = new ArrayList<>();//接口请求的数据
     private JXTasksAdapter adapter;
     private String workCardIdx;//作业项目idx;
+    private boolean isSaveAll = false;
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -99,15 +99,8 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
             mPresenter.searchJXTasksOfProjectOnLocal(jxTasks, charSequence.toString().trim());
         });
 
-        ArmsUtils.configRecyclerView(rvTasks, new LinearLayoutManager(this));
-        adapter = new JXTasksAdapter(jxTasks);
-        adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
-            @Override
-            public void onItemClick(@NonNull View view, int viewType, @NonNull Object data, int position) {
-                JXTask jxTask = jxTasks.get(position);
-                ToastUtils.showShort("item" + position + "点击...");
-            }
-        });
+        rvTasks.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new JXTasksAdapter(this,mPresenter,jxTasks);
         rvTasks.setAdapter(adapter);
 
         srl.setOnRefreshListener(new OnRefreshListener() {
@@ -168,7 +161,14 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
         switch (item.getItemId()) {
             case R.id.saveAll:
                 Toast.makeText(this, "保存所有", Toast.LENGTH_SHORT).show();
-                mPresenter.updateTaskInfo(null);
+
+                List<JXTask> updates = new ArrayList<>();
+                for (JXTask jxTask : adapter.getInfos()) {
+                    if (jxTask.isSaveLaterChecked) {
+                        updates.add(jxTask);
+                    }
+                }
+                mPresenter.updateTaskInfo(updates);
                 break;
         }
         return true;
@@ -203,8 +203,17 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
     }
 
     @Override
-    public void updateTasksSuccess() {
+    public void updateTasksSuccess(String message) {
         hideLoading();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (isSaveAll) {
+            for (JXTask jxTask : adapter.getInfos()) {
+                jxTask.isSaveLaterChecked = false;
+            }
+            isSaveAll = false;
+        }
+//        adapter.notifyDataSetChanged();
+        srl.autoRefresh();
     }
 
     @Override

@@ -5,9 +5,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jess.arms.base.BaseHolder;
@@ -28,11 +27,12 @@ import butterknife.BindView;
 public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
     private final int INPUT_FLAG = 0;
     private final int CHECK_FLAG = 1;
-    private boolean ignoreOnce = false;
+    private JXTask jxTask;
 
 
-    public TaskConditionAdapter(List<JXTask.DetectResult> infos) {
+    public TaskConditionAdapter(JXTask jxTask, List<JXTask.DetectResult> infos) {
         super(infos);
+        this.jxTask = jxTask;
     }
 
     @NonNull
@@ -113,10 +113,10 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
     /**
      * 单选框选择
      */
-    public class CheckConditionHolder extends BaseHolder<JXTask.DetectResult> implements CompoundButton.OnCheckedChangeListener {
+    public class CheckConditionHolder extends BaseHolder<JXTask.DetectResult> {
 
         @BindView(R.id.cb_condition)
-        CheckBox cbCondition;
+        ImageView cbCondition;
         @BindView(R.id.tv_condition)
         TextView tvCondition;
         private JXTask.DetectResult data;
@@ -127,7 +127,23 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
         public CheckConditionHolder(View itemView, TaskConditionAdapter adapter) {
             super(itemView);
             this.adapter = adapter;
-            cbCondition.setOnCheckedChangeListener(this);
+            cbCondition.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean isChecked = (boolean) v.getTag();//之前的选中状态
+                    if (!isChecked) {//后续改为->X状态
+                        JXTask.DetectResult data = mInfos.get(position);
+                        for (JXTask.DetectResult mInfo : mInfos) {
+                            mInfo.detectResult = "";
+                        }
+                        data.detectResult = data.detectItemContent;
+                        jxTask.repairResult = data.detectResult;
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        data.detectResult = "";
+                    }
+                }
+            });
         }
 
         @Override
@@ -135,26 +151,12 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
             this.data = data;
             this.position = position;
             tvCondition.setText(data.detectItemContent != null ? data.detectItemContent : "");
-            cbCondition.setChecked(!TextUtils.isEmpty(data.detectResult.replaceAll(" ", "")));
-            ignoreOnce = true;
-        }
-
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                JXTask.DetectResult data = mInfos.get(position);
-                for (JXTask.DetectResult mInfo : mInfos) {
-                    mInfo.detectResult = " ";
-                }
-                data.detectResult = data.detectItemContent;
-                if (ignoreOnce) {//避免刷新UI时死循环调用
-                    ignoreOnce = false;
-                    return;
-                }else {
-                    notifyDataSetChanged();
-                }
+            if (!TextUtils.isEmpty(data.detectResult.replaceAll(" ", ""))) {
+                cbCondition.setTag(true);
+                cbCondition.setImageResource(R.drawable.rec_checkbox_check);
             } else {
-                data.detectResult = " ";
+                cbCondition.setTag(false);
+                cbCondition.setImageResource(R.drawable.rec_checkbox_uncheck);
             }
         }
     }

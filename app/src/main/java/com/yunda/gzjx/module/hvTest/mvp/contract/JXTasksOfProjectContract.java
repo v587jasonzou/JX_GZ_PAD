@@ -30,7 +30,7 @@ public interface JXTasksOfProjectContract {
 
         void getTasksFail(String message);
 
-        void updateTasksSuccess();
+        void updateTasksSuccess(String message);
 
         void updateTaskFail(String errMsg);
 

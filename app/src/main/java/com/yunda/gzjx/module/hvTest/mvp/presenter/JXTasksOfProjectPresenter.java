@@ -7,6 +7,7 @@ import com.jess.arms.integration.AppManager;
 import com.jess.arms.mvp.BasePresenter;
 import com.jess.arms.utils.RxLifecycleUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
+import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.hvTest.entry.JXTask;
 import com.yunda.gzjx.module.hvTest.mvp.contract.JXTasksOfProjectContract;
@@ -79,10 +80,14 @@ public class JXTasksOfProjectPresenter extends BasePresenter<JXTasksOfProjectCon
     }
 
     public void updateTaskInfo(List<JXTask> jxTaskNews) {
+        for (JXTask jxTaskNew : jxTaskNews) {
+            jxTaskNew.workEmpName = SysInfo.emp.getEmpname();
+            jxTaskNew.workEmpId = SysInfo.emp.getEmpid().toString();
+        }
         mModel.updateTaskInfo(jxTaskNews).compose(RxLifecycleUtils.bindUntilEvent(mRootView, ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<BaseResponse<String>>() {
             @Override
-            public void accept(BaseResponse<String> stringBaseResponse) throws Exception {
-                mRootView.updateTasksSuccess();
+            public void accept(BaseResponse<String> response) throws Exception {
+                mRootView.updateTasksSuccess(response.getMessage());
             }
         }, new Consumer<Throwable>() {
             @Override

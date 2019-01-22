@@ -134,10 +134,12 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
 
     @OnClick(R.id.materialList)
     public void onMaterialListClicked() {
+        toMaterialListAct();
     }
 
     @OnClick(R.id.progressUpload)
     public void onProgressUploadClicked() {
+        toFaultUploadAct();
     }
 
     @Override
@@ -154,9 +156,11 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
                 Toast.makeText(this, "检修记录", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.materialList:
+                toMaterialListAct();
                 Toast.makeText(this, "物料清单", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.progressUpload:
+                toFaultUploadAct();
                 Toast.makeText(this, "过程报活", Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -165,6 +169,21 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
 
     @Override
     public void toJXProjectsListAct() {
+        Intent intent = new Intent(this,JXRecordProjectsActivity.class);
+        intent.putExtra("trainIDX", itemData.getIdx());//机车IDX
+        ArmsUtils.startActivity(intent);
+    }
+
+    @Override
+    public void toMaterialListAct() {
+        Intent intent = new Intent(this,MaterialListActivity.class);
+        intent.putExtra("trainIDX", itemData.getIdx());//机车IDX
+        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//菜单项relationIdx
+        ArmsUtils.startActivity(intent);
+    }
+
+    @Override
+    public void toFaultUploadAct() {
         Intent intent = new Intent(this,JXRecordProjectsActivity.class);
         intent.putExtra("trainIDX", itemData.getIdx());//机车IDX
         intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//菜单项relationIdx

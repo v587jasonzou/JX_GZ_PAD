@@ -70,6 +70,9 @@
         </activity>
         <activity android:name=".module.hvTest.mvp.ui.activity.JXTasksOfProjectActivity">
         </activity>
+        <activity android:name=".module.hvTest.mvp.ui.activity.MaterialListActivity">
+        </activity>
+        <activity android:name=".module.hvTest.mvp.ui.activity.SaveOrUpdateMaterialActivity" android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

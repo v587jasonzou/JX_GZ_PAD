@@ -3,12 +3,13 @@ package com.yunda.gzjx.module.hvTest;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.hvTest.entry.JXProject;
 import com.yunda.gzjx.module.hvTest.entry.JXTask;
+import com.yunda.gzjx.module.hvTest.entry.Material;
+import com.yunda.gzjx.module.hvTest.entry.MaterialSpecInfo;
 import com.yunda.gzjx.module.hvTest.entry.TrainType;
 
 import java.util.List;
 
 import io.reactivex.Observable;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -41,7 +42,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("GZJX/trainmainte/workCard/queryBaseDetails.action")
-    Observable<BaseResponse<List<JXProject>>> queryJXProjects(@Field("workPlanIdx") String trainId, @Field("workStationIdx") String relationIdx, @Field("pageNumber") int pageNumber, @Field("pageSize") int pageSize, @Field("findKey") String keywords);
+    Observable<BaseResponse<List<JXProject>>> queryJXProjects(@Field(value = "workPlanIdx") String trainId, @Field(value = "workStationIdx") String relationIdx, @Field(value = "pageNumber") int pageNumber, @Field(value = "pageSize") int pageSize, @Field(value = "findKey") String keywords);
 
 
     /**
@@ -53,14 +54,57 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("GZJX/trainmainte/workTask/queryTaskDetails.action")
-    Observable<BaseResponse<List<JXTask>>> queryJXTasksOfProject(@Field("workCardIdx") String workCardIdx);
+    Observable<BaseResponse<List<JXTask>>> queryJXTasksOfProject(@Field(value = "workCardIdx") String workCardIdx);
 
     /**
      * 更新巡检任务项
      *
-     * @param jxTasksNew
+     * @param taskJsonArray
      * @return
      */
-    @POST("GZJX/")
-    Observable<BaseResponse<String>> updateTaskInfo(@Body List<JXTask> jxTasksNew);
+    @POST("GZJX/trainmainte/workTask/saveTasks.action")
+    @FormUrlEncoded
+    Observable<BaseResponse<String>> updateTaskInfo(@Field(value = "taskJsonArray") String taskJsonArray);
+
+    /**
+     * 物料清单
+     *
+     * @param workPlanIdx
+     * @return
+     */
+//    @POST("GZJX/partsRepairRecord/getPartsMatList.action")
+    @POST("GZJX/matList/getMatList.action")
+    @FormUrlEncoded
+    Observable<BaseResponse<List<Material>>>  getMaterialList(@Field("workPlanIdx") String workPlanIdx,@Field("workStationIdx") String workStationIdx);
+
+    /**
+     * 删除物料
+     *
+     * @param materialIDX
+     * @return
+     */
+    @POST("GZJX/xxx")
+    @FormUrlEncoded
+    Observable<BaseResponse>  delMaterialWithIDX(@Field("materialIDX") String materialIDX);
+
+
+    /**
+     * 添加/更新物料
+     *
+     * @param material
+     * @return
+     */
+    @POST("GZJX/matrdplist/matRdpList/saveMatInfo.action")
+    @FormUrlEncoded
+    Observable<BaseResponse> saveOrUpdateMaterial(@Field("partsMatJSONStr") String material);
+
+    /**
+     * 获取物料规格信息(供选择)
+     *
+     * @param idx
+     * @return
+     */
+    @POST("GZJX/xxx")
+    @FormUrlEncoded
+    Observable<BaseResponse<List<MaterialSpecInfo>>> getMaterialSpecInfo(@Field("xxx") String idx);
 }

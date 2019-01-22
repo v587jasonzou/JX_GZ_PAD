@@ -28,11 +28,12 @@ public class JXTask {
     public String workEmpName;
     public String repairContent;
     public String remarks;
+    public String repairResult;//当且仅当勾选"作业情况"中的内容时，赋值到此变量
     public List<Quality> qualityList;
     public List<DetectResult> detectResultList;
 
     /*业务属性 - UI相关*/
-    public boolean isSaveSingleChecked = false;
+//    public boolean isSaveSingleChecked = false;
     public boolean isSaveLaterChecked = false;
 
     /**
@@ -60,16 +61,16 @@ public class JXTask {
         public String checkEmpId;
         public String checkEmpName;
         public String updateTime;
-        public String qualityIdx;
+        public String idx;
         public String qualityItem;
         public String repairResult;
         public String workTaskIdx;
 
-        public Quality(String checkEmpId, String checkEmpName, String updateTime, String qualityIdx, String qualityItem, String repairResult, String workTaskIdx) {
+        public Quality(String checkEmpId, String checkEmpName, String updateTime, String idx, String qualityItem, String repairResult, String workTaskIdx) {
             this.checkEmpId = checkEmpId;
             this.checkEmpName = checkEmpName;
             this.updateTime = updateTime;
-            this.qualityIdx = qualityIdx;
+            this.idx = idx;
             this.qualityItem = qualityItem;
             this.repairResult = repairResult;
             this.workTaskIdx = workTaskIdx;

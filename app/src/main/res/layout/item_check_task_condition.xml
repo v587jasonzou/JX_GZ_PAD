@@ -6,14 +6,17 @@
               android:orientation="horizontal"
               android:padding="5dp">
 
-    <CheckBox
+    <ImageView
         android:id="@+id/cb_condition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="25dp"
+        android:padding="2dp"
+        android:src="@drawable/rec_checkbox_check"
+        android:layout_height="25dp"/>
 
     <TextView
         android:id="@+id/tv_condition"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="各软连线状态良好"/>

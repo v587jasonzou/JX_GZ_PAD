@@ -8,8 +8,8 @@ import com.jess.arms.integration.IRepositoryManager;
 import com.jess.arms.mvp.BaseModel;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.hvTest.Api;
-import com.yunda.gzjx.module.hvTest.entry.JXTask;
-import com.yunda.gzjx.module.hvTest.mvp.contract.JXTasksOfProjectContract;
+import com.yunda.gzjx.module.hvTest.entry.Material;
+import com.yunda.gzjx.module.hvTest.mvp.contract.MaterialListContract;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import io.reactivex.Observable;
  * ================================================
  * Description:
  * <p>
- * Created by MVPArmsTemplate on 01/14/2019 11:34
+ * Created by MVPArmsTemplate on 01/21/2019 10:40
  * <a href="mailto:jess.yan.effort@gmail.com">Contact me</a>
  * <a href="https://github.com/JessYanCoding">Follow me</a>
  * <a href="https://github.com/JessYanCoding/MVPArms">Star me</a>
@@ -31,14 +31,14 @@ import io.reactivex.Observable;
  * ================================================
  */
 @ActivityScope
-public class JXTasksOfProjectModel extends BaseModel implements JXTasksOfProjectContract.Model {
+public class MaterialListModel extends BaseModel implements MaterialListContract.Model {
     @Inject
     Gson mGson;
     @Inject
     Application mApplication;
 
     @Inject
-    public JXTasksOfProjectModel(IRepositoryManager repositoryManager) {
+    public MaterialListModel(IRepositoryManager repositoryManager) {
         super(repositoryManager);
     }
 
@@ -50,12 +50,12 @@ public class JXTasksOfProjectModel extends BaseModel implements JXTasksOfProject
     }
 
     @Override
-    public Observable<BaseResponse<List<JXTask>>> queryJXTasksOfProject(String workCardIdx) {
-        return mRepositoryManager.obtainRetrofitService(Api.class).queryJXTasksOfProject(workCardIdx);
+    public Observable<BaseResponse<List<Material>>> getMaterialList(String trainIdx,String workStationIdx) {
+        return mRepositoryManager.obtainRetrofitService(Api.class).getMaterialList(trainIdx,workStationIdx);
     }
 
     @Override
-    public Observable<BaseResponse<String>> updateTaskInfo(List<JXTask> jxTaskNews) {
-        return  mRepositoryManager.obtainRetrofitService(Api.class).updateTaskInfo(new Gson().toJson(jxTaskNews));
+    public Observable<BaseResponse> delMaterial(String materialIDX) {
+        return mRepositoryManager.obtainRetrofitService(Api.class).delMaterialWithIDX(materialIDX);
     }
 }
