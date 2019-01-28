@@ -20,11 +20,11 @@ public class TrainTypeHolder extends BaseHolder<TrainType> {
     public void setData(TrainType data, int position) {
         if (data!=null){
             String str = "";
-            if(data.getTrainTypeShortname()!=null){
-                str = data.getTrainTypeShortname()+" ";
+            if(data.trainTypeShortname!=null){
+                str = data.trainTypeShortname+" ";
             }
-            if (data.getTrainNo()!=null){
-                str = str+data.getTrainNo();
+            if (data.trainNo!=null){
+                str = str+data.trainNo;
             }
             tvTrainNo.setText(str);
         }

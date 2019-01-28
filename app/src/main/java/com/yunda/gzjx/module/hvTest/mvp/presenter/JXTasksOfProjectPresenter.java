@@ -83,6 +83,12 @@ public class JXTasksOfProjectPresenter extends BasePresenter<JXTasksOfProjectCon
         for (JXTask jxTaskNew : jxTaskNews) {
             jxTaskNew.workEmpName = SysInfo.emp.getEmpname();
             jxTaskNew.workEmpId = SysInfo.emp.getEmpid().toString();
+            for (int i = jxTaskNew.qualityList.size() - 1; i >= 0; i--) {
+                JXTask.Quality quality = jxTaskNew.qualityList.get(i);
+                if (quality.repairResult == null || quality.repairResult.isEmpty()) {//剔除杂项
+                    jxTaskNew.qualityList.remove(i);
+                }
+            }
         }
         mModel.updateTaskInfo(jxTaskNews).compose(RxLifecycleUtils.bindUntilEvent(mRootView, ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<BaseResponse<String>>() {
             @Override

@@ -28,6 +28,7 @@ public class JXTask {
     public String workEmpName;
     public String repairContent;
     public String remarks;
+    public String workStepIdx;
     public String repairResult;//当且仅当勾选"作业情况"中的内容时，赋值到此变量
     public List<Quality> qualityList;
     public List<DetectResult> detectResultList;

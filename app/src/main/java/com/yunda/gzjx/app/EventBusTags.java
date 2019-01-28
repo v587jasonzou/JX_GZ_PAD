@@ -14,4 +14,6 @@ package com.yunda.gzjx.app;
  */
 public interface EventBusTags {
     public static final String NEED_TO_LOGIN = "need_to_login";
+    public static final String NEED_TO_REFRESH_MATERIAL_LIST = "need_to_refresh_material_list";
+    public static final String NEED_TO_REFRESH_TICKET_LIST = "need_to_refresh_ticket_list";
 }

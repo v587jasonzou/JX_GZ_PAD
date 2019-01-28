@@ -171,7 +171,7 @@ public class SettingActivity extends BaseActivity<SettingPresenter> implements S
                 configuration.configRetrofit(getApplication(), builder);
             repositoryManager.setRetrofit(builder.build());
             SysInfo.cookieStore.clear();//清除session缓存
-
+            SPUtils.getInstance().put(ApiConstant.SP_TAG_BASE_URL,url);
             ToastUtils.showShort("修改成功");
             finish();
         }

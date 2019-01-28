@@ -42,7 +42,9 @@ public class SaveOrUpdateMaterialPresenter extends BasePresenter<SaveOrUpdateMat
     public void saveOrUpdateMaterial(Material material) {
         mModel.saveOrUpdateSuccess(material).compose(RxLifecycleUtils.bindUntilEvent(mRootView, ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread()).subscribe(baseResponse -> {
             if (baseResponse.getSuccess()) {
-                mRootView.saveOrUpdateSuccess(baseResponse.getMessage());
+                mRootView.saveOrUpdateSuccess(baseResponse.getData(),baseResponse.getMessage());
+            }else {
+                mRootView.saveOrUpdateFail(baseResponse.getMessage());
             }
         }, throwable -> {
             mRootView.saveOrUpdateFail(throwable.getMessage());

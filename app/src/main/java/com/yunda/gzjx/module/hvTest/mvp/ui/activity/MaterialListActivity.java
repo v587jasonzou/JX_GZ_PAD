@@ -33,6 +33,7 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import com.yunda.gzjx.R;
+import com.yunda.gzjx.app.EventBusTags;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
 import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.hvTest.di.component.DaggerMaterialListComponent;
@@ -41,6 +42,8 @@ import com.yunda.gzjx.module.hvTest.mvp.contract.MaterialListContract;
 import com.yunda.gzjx.module.hvTest.mvp.presenter.MaterialListPresenter;
 import com.yunda.gzjx.module.hvTest.mvp.ui.adapter.MaterialsAdapter;
 import com.yunda.gzjx.view.SimpleDividerDecoration;
+
+import org.simple.eventbus.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +63,9 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
  */
 public class MaterialListActivity extends BaseActivity<MaterialListPresenter> implements MaterialListContract.View {
 
-    public static Material curToUpdateMaterial = null;
+    public static List<Material> sourceData = new ArrayList<>();
+    private static Material curToUpdateMaterial = null;
+    private static List<Material> searchedData;
     @BindView(R.id.menu)
     Toolbar menu;
     @BindView(R.id.etSearch)
@@ -71,21 +76,37 @@ public class MaterialListActivity extends BaseActivity<MaterialListPresenter> im
     SmartRefreshLayout srlLayout;
     @BindView(R.id.addMaterial)
     ImageView addMaterial;
+    private boolean needRefreshData = false;
+    private String trainIdx;//机车IDX
+    private MaterialsAdapter adapter;
+    private Context mContext;
+
+    public static Material getCurToUpdateMaterial() {
+        return curToUpdateMaterial;
+    }
 
     public static List<Material> getSourceData() {
         return sourceData;
     }
 
-    public static List<Material> sourceData = new ArrayList<>();
-    private static List<Material> searchedData;
-    private String trainIdx;//机车IDX
-    private MaterialsAdapter adapter;
-    private Context mContext;
-
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
         DaggerMaterialListComponent //如找不到该类,请编译一下项目
                 .builder().appComponent(appComponent).view(this).build().inject(this);
+    }
+
+    @Subscriber(tag = EventBusTags.NEED_TO_REFRESH_MATERIAL_LIST)
+    private void toUpdateData(Material material) {
+        needRefreshData = true;//回到界面时刷新
+
+        /*int post = sourceData.indexOf(curToUpdateMaterial);
+        if (post != -1) {
+            curToUpdateMaterial = material;
+            sourceData.set(post, material);
+        } else {
+            curToUpdateMaterial = null;
+            sourceData.add(material);
+        }*/
     }
 
     @Override
@@ -95,6 +116,7 @@ public class MaterialListActivity extends BaseActivity<MaterialListPresenter> im
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
+        needRefreshData = false;
         mContext = this;
         trainIdx = getIntent().getStringExtra("trainIDX");
 
@@ -110,6 +132,7 @@ public class MaterialListActivity extends BaseActivity<MaterialListPresenter> im
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 showLoading();
+                etSearch.setText("");
                 mPresenter.getMaterialList(trainIdx, HomeActivity.getCurRelationIdx());
             }
         });
@@ -138,6 +161,7 @@ public class MaterialListActivity extends BaseActivity<MaterialListPresenter> im
             @Override
             public void onItemClick(SwipeMenuBridge menuBridge, int position) {
                 menuBridge.closeMenu();
+                showLoading();
                 mPresenter.delMaterial(adapter.getItemData(position).matIdx, position);
             }
         });
@@ -160,6 +184,14 @@ public class MaterialListActivity extends BaseActivity<MaterialListPresenter> im
 
         showLoading();
         mPresenter.getMaterialList(trainIdx, HomeActivity.getCurRelationIdx());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (needRefreshData) {
+            srlLayout.autoRefresh();
+        }
     }
 
     @Override

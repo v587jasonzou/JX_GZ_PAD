@@ -114,7 +114,7 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
                 String str = charSequence.toString();
                 if(!StringUtils.isTrimEmpty(str)){
                     for(TrainType bean:tempList){
-                        if((bean.getTrainNo()!=null&&bean.getTrainNo().contains(str))||(bean.getTrainTypeShortname()!=null&&bean.getTrainTypeShortname().contains(str))){
+                        if((bean.trainNo!=null&&bean.trainNo.contains(str))||(bean.trainTypeShortname!=null&&bean.trainTypeShortname.contains(str))){
                             mList.add(bean);
                         }
                     }
@@ -130,7 +130,7 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
             public void onItemClick(View view, int viewType, Object data, int position) {
                 if(mList.get(position)!=null){
                     Intent intent = new Intent(getBaseContext(),HVTestBaseInfoActivity.class);
-                    intent.putExtra("itemData", mList.get(position));
+                    intent.putExtra("idx", mList.get(position).idx);
                     /*intent.putExtra("idx",mList.get(position).getIdx());
                     if(mList.get(position).getTrainNo()!=null){
                         intent.putExtra("trainNo",mList.get(position).getTrainNo());

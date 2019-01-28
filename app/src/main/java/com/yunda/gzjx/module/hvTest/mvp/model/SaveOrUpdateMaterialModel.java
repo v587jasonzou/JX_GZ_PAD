@@ -12,6 +12,7 @@ import com.yunda.gzjx.module.hvTest.entry.Material;
 import com.yunda.gzjx.module.hvTest.entry.MaterialSpecInfo;
 import com.yunda.gzjx.module.hvTest.mvp.contract.SaveOrUpdateMaterialContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,12 +46,14 @@ public class SaveOrUpdateMaterialModel extends BaseModel implements SaveOrUpdate
     }
 
     @Override
-    public Observable<BaseResponse> saveOrUpdateSuccess(Material materialNew) {
-        return mRepositoryManager.obtainRetrofitService(Api.class).saveOrUpdateMaterial("");
+    public Observable<BaseResponse<List<Material>>> saveOrUpdateSuccess(Material materialNew) {
+        List list = new ArrayList();
+        list.add(materialNew);
+        return mRepositoryManager.obtainRetrofitService(Api.class).saveOrUpdateMaterial(new Gson().toJson(list));
     }
 
     @Override
     public Observable<BaseResponse<List<MaterialSpecInfo>>> getMaterialSpecInfo() {
-        return mRepositoryManager.obtainRetrofitService(Api.class).getMaterialSpecInfo("");
+        return mRepositoryManager.obtainRetrofitService(Api.class).getMaterialSpecInfo();
     }
 }

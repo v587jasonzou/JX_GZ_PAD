@@ -15,21 +15,22 @@ import java.util.List;
 
 /**
  * 项目:  JX_GZ_PAD <br>
- * 描述:  todo：数据项异常问题，radiobutton<br>
  * 创建人: 邹旭<br>
  * 创建时间: 2019/1/11 16:05<br>
  */
 public class JXTasksAdapter extends DefaultAdapter<JXTask> implements View.OnClickListener {
     private JXTasksOfProjectPresenter presenter;
     private JXTasksOfProjectContract.View view;
+    private List<JXTask> datas;
     public JXTasksAdapter(JXTasksOfProjectContract.View view ,JXTasksOfProjectPresenter presenter, List<JXTask> infos) {
         super(infos);
+        datas = infos;
         this.view = view;
         this.presenter = presenter;
     }
 
     public void updateData(List<JXTask> infos) {
-        this.mInfos = infos;
+        datas = this.mInfos = infos;
         notifyDataSetChanged();
     }
 

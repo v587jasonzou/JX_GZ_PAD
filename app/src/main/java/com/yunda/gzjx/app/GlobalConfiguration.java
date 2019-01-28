@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jess.arms.base.delegate.AppLifecycles;
@@ -56,14 +57,14 @@ public final class GlobalConfiguration implements ConfigModule {
 
     @Override
     public void applyOptions(Context context, GlobalConfigModule.Builder builder) {
-    //  类似于Logger库的打印，不适合列表的打印
+        //  类似于Logger库的打印，不适合列表的打印
         if (!BuildConfig.LOG_DEBUG) { //Release 时, 让框架不再打印 Http 请求和响应的信息
             builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
         }
-//        builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
+        //        builder.printHttpLogLevel(RequestInterceptor.Level.NONE);
 
 
-        builder.baseurl(ApiConstant.BaseUrl)
+        builder.baseurl(SPUtils.getInstance().contains(ApiConstant.SP_TAG_BASE_URL) ? SPUtils.getInstance().getString(ApiConstant.SP_TAG_BASE_URL) : ApiConstant.BaseUrl)
                 //强烈建议自己自定义图片加载逻辑, 因为 arms-imageloader-glide 提供的 GlideImageLoaderStrategy 并不能满足复杂的需求
                 //请参考 https://github.com/JessYanCoding/MVPArms/wiki#3.4
                 .imageLoaderStrategy(new GlideImageLoaderStrategy())
@@ -129,71 +130,67 @@ public final class GlobalConfiguration implements ConfigModule {
                 .globalHttpHandler(new GlobalHttpHandlerImpl(context))
                 //用来处理 RxJava 中发生的所有错误, RxJava 中发生的每个错误都会回调此接口
                 //RxJava 必须要使用 ErrorHandleSubscriber (默认实现 Subscriber 的 onError 方法), 此监听才生效
-                .responseErrorListener(new ResponseErrorListenerImpl())
-                .gsonConfiguration(new AppModule.GsonConfiguration() {
-                        @Override
-                        public void configGson(@NonNull Context context, @NonNull GsonBuilder gsonBuilder) {//这里可以自己自定义配置 Gson 的参数
-                            gsonBuilder.serializeNulls()//支持序列化值为 null 的参数
-                                    .enableComplexMapKeySerialization();//支持将序列化 key 为 Object 的 Map, 默认只能序列化 key 为 String 的 Map
+                .responseErrorListener(new ResponseErrorListenerImpl()).gsonConfiguration(new AppModule.GsonConfiguration() {
+            @Override
+            public void configGson(@NonNull Context context, @NonNull GsonBuilder gsonBuilder) {//这里可以自己自定义配置 Gson 的参数
+                gsonBuilder.serializeNulls()//支持序列化值为 null 的参数
+                        .enableComplexMapKeySerialization();//支持将序列化 key 为 Object 的 Map, 默认只能序列化 key 为 String 的 Map
+            }
+        }).retrofitConfiguration(new ClientModule.RetrofitConfiguration() {
+            @Override
+            public void configRetrofit(@NonNull Context context, @NonNull Retrofit.Builder retrofitBuilder) {//这里可以自己自定义配置 Retrofit 的参数, 甚至您可以替换框架配置好的 OkHttpClient 对象 (但是不建议这样做, 这样做您将损失框架提供的很多功能)
+                //                                                retrofitBuilder.addConverterFactory(FastJsonConverterFactory.create());//比如使用 FastJson 替代 Gson
+                retrofitBuilder.addConverterFactory(ScalarsConverterFactory.create());//直接获取String
+            }
+        }).okhttpConfiguration(new ClientModule.OkhttpConfiguration() {
+            @Override
+            public void configOkhttp(@NonNull Context context, @NonNull OkHttpClient.Builder okhttpBuilder) {
+                //                    okhttpBuilder.sslSocketFactory(); //支持 Https, 详情请百度
+                okhttpBuilder.writeTimeout(10, TimeUnit.SECONDS);
+                okhttpBuilder.connectTimeout(10, TimeUnit.SECONDS);
+                okhttpBuilder.readTimeout(10, TimeUnit.SECONDS);
+                okhttpBuilder.addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request.Builder builder = chain.request().newBuilder();
+                        builder.addHeader("Connection", "close");
+                        return chain.proceed(builder.build());
+                    }
+                });
+                okhttpBuilder.followRedirects(false);
+                okhttpBuilder.followSslRedirects(false);
+                okhttpBuilder.cookieJar(new CookieJar() {//保存Cookie值,session保持
+                    @Override
+                    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                        if (SysInfo.cookieStore.get(url.host()) == null || SysInfo.cookieStore.get(url.host()).size() == 0) {
+                            Logger.json(new Gson().toJson(cookies));
+                            SysInfo.cookieStore.put(url.host(), cookies);
                         }
-                    })
-                .retrofitConfiguration(new ClientModule.RetrofitConfiguration() {
-                        @Override
-                        public void configRetrofit(@NonNull Context context, @NonNull Retrofit.Builder retrofitBuilder) {//这里可以自己自定义配置 Retrofit 的参数, 甚至您可以替换框架配置好的 OkHttpClient 对象 (但是不建议这样做, 这样做您将损失框架提供的很多功能)
-//                                                retrofitBuilder.addConverterFactory(FastJsonConverterFactory.create());//比如使用 FastJson 替代 Gson
-                            retrofitBuilder.addConverterFactory(ScalarsConverterFactory.create());//直接获取String
-                        }
-                    })
-                .okhttpConfiguration(new ClientModule.OkhttpConfiguration() {
-                        @Override
-                        public void configOkhttp(@NonNull Context context, @NonNull OkHttpClient.Builder okhttpBuilder) {
-                            //                    okhttpBuilder.sslSocketFactory(); //支持 Https, 详情请百度
-                            okhttpBuilder.writeTimeout(10, TimeUnit.SECONDS);
-                            okhttpBuilder.connectTimeout(10,TimeUnit.SECONDS);
-                            okhttpBuilder.readTimeout(10,TimeUnit.SECONDS);
-                            okhttpBuilder.addInterceptor(new Interceptor() {
-                                @Override
-                                public Response intercept(Chain chain) throws IOException {
-                                    Request.Builder builder = chain.request().newBuilder();
-                                    builder.addHeader("Connection", "close");
-                                    return chain.proceed(builder.build());
-                                }
-                            });
-                            okhttpBuilder.followRedirects(false);
-                            okhttpBuilder .followSslRedirects(false);
-                            okhttpBuilder.cookieJar(new CookieJar() {//保存Cookie值,session保持
-                                @Override
-                                public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                                    if(SysInfo.cookieStore.get(url.host())==null||SysInfo.cookieStore.get(url.host()).size()==0){
-                                        Logger.json(new Gson().toJson(cookies));
-                                        SysInfo.cookieStore.put(url.host(), cookies);
-                                    }
-                                }
+                    }
 
-                                @Override
-                                public List<Cookie> loadForRequest(HttpUrl url) {
-                                    List<Cookie> cookies = SysInfo.cookieStore.get(url.host());
-                                    return cookies != null ? cookies : new ArrayList<Cookie>();
-                                }
-                            });
-                            if (BuildConfig.LOG_DEBUG) {//打印日志，使用OKHttp的日志库
-                                okhttpBuilder.addInterceptor(getHttpLoggingInterceptor());
-                            }
-                            //使用一行代码监听 Retrofit／Okhttp 上传下载进度监听, 以及 Glide 加载进度监听, 详细使用方法请查看 https://github.com/JessYanCoding/ProgressManager
-                            //                    ProgressManager.getInstance().with(okhttpBuilder);
-                            //让 Retrofit 同时支持多个 BaseUrl 以及动态改变 BaseUrl, 详细使用方法请查看 https://github.com/JessYanCoding/RetrofitUrlManager
-                            //                    RetrofitUrlManager.getInstance().with(okhttpBuilder);
-                        }
-                    })
-                .rxCacheConfiguration(new ClientModule.RxCacheConfiguration() {
-                        @Override
-                        public RxCache configRxCache(@NonNull Context context, @NonNull RxCache.Builder rxCacheBuilder) {//这里可以自己自定义配置 RxCache 的参数
-                            rxCacheBuilder.useExpiredDataIfLoaderNotAvailable(true);
-                            //想自定义 RxCache 的缓存文件夹或者解析方式, 如改成 FastJson, 请 return rxCacheBuilder.persistence(cacheDirectory, new FastJsonSpeaker());
-                            //否则请 return null;
-                            return null;
-                        }
-                    });
+                    @Override
+                    public List<Cookie> loadForRequest(HttpUrl url) {
+                        List<Cookie> cookies = SysInfo.cookieStore.get(url.host());
+                        return cookies != null ? cookies : new ArrayList<Cookie>();
+                    }
+                });
+                if (BuildConfig.LOG_DEBUG) {//打印日志，使用OKHttp的日志库
+                    okhttpBuilder.addInterceptor(getHttpLoggingInterceptor());
+                }
+                //使用一行代码监听 Retrofit／Okhttp 上传下载进度监听, 以及 Glide 加载进度监听, 详细使用方法请查看 https://github.com/JessYanCoding/ProgressManager
+                //                    ProgressManager.getInstance().with(okhttpBuilder);
+                //让 Retrofit 同时支持多个 BaseUrl 以及动态改变 BaseUrl, 详细使用方法请查看 https://github.com/JessYanCoding/RetrofitUrlManager
+                //                    RetrofitUrlManager.getInstance().with(okhttpBuilder);
+            }
+        }).rxCacheConfiguration(new ClientModule.RxCacheConfiguration() {
+            @Override
+            public RxCache configRxCache(@NonNull Context context, @NonNull RxCache.Builder rxCacheBuilder) {//这里可以自己自定义配置 RxCache 的参数
+                rxCacheBuilder.useExpiredDataIfLoaderNotAvailable(true);
+                //想自定义 RxCache 的缓存文件夹或者解析方式, 如改成 FastJson, 请 return rxCacheBuilder.persistence(cacheDirectory, new FastJsonSpeaker());
+                //否则请 return null;
+                return null;
+            }
+        });
     }
 
     @Override

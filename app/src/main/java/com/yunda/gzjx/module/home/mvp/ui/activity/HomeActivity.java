@@ -16,8 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.base.DefaultAdapter;
 import com.jess.arms.di.component.AppComponent;
@@ -53,6 +51,8 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
  */
 public class HomeActivity extends BaseActivity<HomePresenter> implements HomeContract.View {
 
+    private static String curWorkStationName;//工位名称
+    private static String curRelationIdx = null;//"工位idx"---首页当前选中的菜单项 - 其他界面会取值
     @BindView(R.id.tvUserRole)
     TextView tvUserRole;
     @BindView(R.id.tvUsername)
@@ -68,11 +68,18 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     HomeMenuAdapter adapter;
     boolean mBackKeyPressed = false;
 
+    public static String getCurWorkStationName() {
+        return curWorkStationName;
+    }
+
+    /**
+     * 工位idx
+     *
+     * @return
+     */
     public static String getCurRelationIdx() {
         return curRelationIdx;
     }
-
-    private static String curRelationIdx = null;//首页当前选中的菜单项 - 其他界面会取值
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -124,25 +131,25 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int viewType, Object data, int position) {
-                if (SysInfo.menus.get(position).getMenu().equals("高压试验")) {
-                    if (data instanceof MenuSimpleBean) {
-                        MenuSimpleBean menu = (MenuSimpleBean) data;
-                        curRelationIdx = menu.getRelationIdx();
-                        Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
-//                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
-                        ArmsUtils.startActivity(intent);
-                    }
+//                if (SysInfo.menus.get(position).getMenu().equals("高压试验")) {
+//                    if (data instanceof MenuSimpleBean) {
+//                        MenuSimpleBean menu = (MenuSimpleBean) data;
+//                        curRelationIdx = menu.getRelationIdx();
+//                        curWorkStationName = menu.getMenu();
+//                        Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
+//                        //                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
+//                        ArmsUtils.startActivity(intent);
+//                    }
+//                }
 
-                } else if (SysInfo.menus.get(position).getMenu().equals("配件接收登记")) {
-                    //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, GetParstListActivity.class));
-                } else if (SysInfo.menus.get(position).getMenu().equals("配件上车登记")) {
-                    //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, UpPartsListActivity.class));
-                } else if (SysInfo.menus.get(position).getMenu().equals("大部件拆解清单登记")) {
-                    //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, BigPartsListActivity.class));
-                } else if (SysInfo.menus.get(position).getMenu().equals("大部件组装清单登记")) {
-                    //                    ArmsUtils.startActivity(new Intent(HomeActivity.this, AssemblyBigPartsListActivity.class));
+                if (data instanceof MenuSimpleBean) {
+                    MenuSimpleBean menu = (MenuSimpleBean) data;
+                    curRelationIdx = menu.getRelationIdx();
+                    curWorkStationName = menu.getMenu();
+                    Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
+                    //                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
+                    ArmsUtils.startActivity(intent);
                 }
-
             }
         });
     }
@@ -206,12 +213,6 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         hideLoading();
         srRefresh.finishRefresh();
         ToastUtils.showShort(msg);
-
-        // TODO: 2019/1/16 debug
-        if (true) {
-            String s ="[\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"14e6ebe3439f44e38ae3ef2ff76e444c\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"c4208e93a2eb4027b13b8cb16d0854b2\",\n" + "            \"relationName\": \"高压试验\",\n" + "            \"menuUrl\": \"http://360\",\n" + "            \"menuName\": \"高压试验\"\n" + "        },\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"2d65f419da1c4e73872a744cb518a803\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"03d8a3d0247f404f8b140d0f43e42725\",\n" + "            \"relationName\": \"低压试验\",\n" + "            \"menuUrl\": \"http://souhu.com\",\n" + "            \"menuName\": \"低压试验\"\n" + "        },\n" + "        {\n" + "            \"createTime\": 1546963200000,\n" + "            \"idx\": \"ab387afc1e89410995f9cdb48e6aac47\",\n" + "            \"relationType\": \"1 \",\n" + "            \"updateTime\": 1546963200000,\n" + "            \"updator\": \"wangdajun\",\n" + "            \"createrName\": \"王大军\",\n" + "            \"updatorName\": \"王大军\",\n" + "            \"creater\": \"wangdajun\",\n" + "            \"jxAppid\": \"2\",\n" + "            \"relationIdx\": \"68e9ddbeb3a74e63a6a9f53d072ce599\",\n" + "            \"relationName\": \"称重试验\",\n" + "            \"menuUrl\": \"cdsdscdscdacds\",\n" + "            \"menuName\": \"称重试验\"\n" + "        }\n" + "    ]";
-            getMenuSuccess(new GsonBuilder().create().fromJson(s,new TypeToken<List<MenuSimpleBean>>(){}.getType()));
-        }
     }
 
     @Override

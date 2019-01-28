@@ -20,7 +20,7 @@ public class JXProject {
     public String workCardIdx;
     public String repairContent;
     public String workTaskIdx;
-    public int RN;
+    public String  RN;//序号
     public String workCardName;
     public int allCount;//所有项
     public int unhandleCount;//未处理项

@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- (检修 - 作业项目) -->
 <com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="4dp"
         app:contentPaddingBottom="12dp"
         app:contentPaddingLeft="18dp"
         app:contentPaddingRight="18dp"
         app:contentPaddingTop="12dp">
+
         <com.zhy.autolayout.AutoLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,30 +35,49 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/project"/>
+
+                    <TextView
+                        android:id="@+id/tvOrder"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:background="@drawable/bg_order"
+                        android:gravity="center"
+                        android:maxLength="3"
+                        android:text="1"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="14sp"
+                        />
 
                     <TextView
                         android:id="@+id/tvProjectName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
-                        android:text="主变流器水位保护"
-                        android:layout_gravity="left"
-                        android:gravity="center_vertical"
                         android:drawablePadding="10dp"
-                        android:drawableLeft="@mipmap/project"
+                        android:gravity="center_vertical"
+                        android:text="主变流器水位保护"
                         android:textColor="@color/title_text_color"
-                        android:textSize="@dimen/text_size_16" />
+                        android:textSize="@dimen/text_size_16"/>
+
                     <TextView
                         android:id="@+id/progress"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="20/40"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
+                        android:gravity="center_vertical"
+                        android:text="20/40"
                         android:textColor="@color/text_color_night"
-                        android:textSize="@dimen/text_size_16" />
+                        android:textSize="@dimen/text_size_16"/>
+
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

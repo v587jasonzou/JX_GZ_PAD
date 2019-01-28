@@ -1,6 +1,7 @@
 package com.yunda.gzjx.module.hvTest;
 
 import com.yunda.gzjx.entity.BaseResponse;
+import com.yunda.gzjx.module.hvTest.entry.FaultTask;
 import com.yunda.gzjx.module.hvTest.entry.JXProject;
 import com.yunda.gzjx.module.hvTest.entry.JXTask;
 import com.yunda.gzjx.module.hvTest.entry.Material;
@@ -13,6 +14,7 @@ import io.reactivex.Observable;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 /**
@@ -29,6 +31,15 @@ public interface Api {
      */
     @GET("GZJX/trainWorkList/queryList.action")
     Observable<BaseResponse<List<TrainType>>> getTrainList();
+
+    /**
+     * 机车基本信息
+     *
+     * @return
+     */
+    @POST("GZJX/recordDetails/queryTitleAndBaseData.action")
+    @FormUrlEncoded
+    Observable<BaseResponse<List<TrainType>>> getTrainBaseInfo(@Field("workPlanIdx") String trainIdx,@Field("workStationIdx") String workStationIdx);
 
     /**
      * 查询检修记录 - 作业项目列表
@@ -83,28 +94,59 @@ public interface Api {
      * @param materialIDX
      * @return
      */
-    @POST("GZJX/xxx")
+    @POST("GZJX/matrdplist/matRdpList/deleteMatInfo.action")
     @FormUrlEncoded
-    Observable<BaseResponse>  delMaterialWithIDX(@Field("materialIDX") String materialIDX);
+    Observable<BaseResponse>  delMaterialWithIDX(@Field("matIdx") String materialIDX);
 
 
     /**
      * 添加/更新物料
      *
-     * @param material
+     * @param materialJSON
      * @return
      */
     @POST("GZJX/matrdplist/matRdpList/saveMatInfo.action")
     @FormUrlEncoded
-    Observable<BaseResponse> saveOrUpdateMaterial(@Field("partsMatJSONStr") String material);
+    @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8") //添加
+    Observable<BaseResponse<List<Material>>> saveOrUpdateMaterial(@Field("matJSONStr") String materialJSON);
 
     /**
      * 获取物料规格信息(供选择)
      *
-     * @param idx
      * @return
      */
-    @POST("GZJX/xxx")
+    @GET("GZJX/matsinfo/matTypeList/getMatTypeList.action")
+    Observable<BaseResponse<List<MaterialSpecInfo>>> getMaterialSpecInfo();
+
+    /**
+     * 过程报活列表
+     *
+     * @param workPlanIdx  机车idx
+     * @param workStationIdx 工位IDX
+     * @return
+     */
+    @POST("GZJX/jxgcTicket/getTicketList.action")
     @FormUrlEncoded
-    Observable<BaseResponse<List<MaterialSpecInfo>>> getMaterialSpecInfo(@Field("xxx") String idx);
+    Observable<BaseResponse<List<FaultTask>>> getTicketList(@Field("workPlanIdx") String workPlanIdx, @Field("workStationIdx") String workStationIdx);
+
+    /**
+     * 删除过程报活 - 提票
+     *
+     * @param ticketIdx
+     * @return
+     */
+    @POST("GZJX/ticket/faultTicket/deleteTicketInfo.action")
+    @FormUrlEncoded
+    Observable<BaseResponse> delTicket(@Field("ticketIdx") String ticketIdx);
+
+    /**
+     * 添加、更新，过程报活
+     *
+     * @param ticketIdx
+     * @return
+     */
+    @POST("GZJX/ticket/faultTicket/saveTicketInfo.action")
+    @FormUrlEncoded
+    @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8") //添加
+    Observable<BaseResponse<List<FaultTask>>> saveOrUpdateTicket(@Field("ticketJSONStr") String ticketIdx);
 }

@@ -1,13 +1,19 @@
 package com.yunda.gzjx.module.hvTest.mvp.ui.activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,20 +29,29 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.uuzuche.lib_zxing.activity.CaptureActivity;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.yunda.gzjx.R;
+import com.yunda.gzjx.app.EventBusTags;
 import com.yunda.gzjx.app.SysInfo;
 import com.yunda.gzjx.app.utils.ProgressDialogUtils;
+import com.yunda.gzjx.constant.BusinessConstant;
 import com.yunda.gzjx.module.hvTest.di.component.DaggerSaveOrUpdateMaterialComponent;
 import com.yunda.gzjx.module.hvTest.entry.Material;
 import com.yunda.gzjx.module.hvTest.entry.MaterialSpecInfo;
 import com.yunda.gzjx.module.hvTest.mvp.contract.SaveOrUpdateMaterialContract;
 import com.yunda.gzjx.module.hvTest.mvp.presenter.SaveOrUpdateMaterialPresenter;
 
+import org.simple.eventbus.EventBus;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
@@ -152,10 +167,16 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
     LinearLayout llOpt;
     @BindView(R.id.tv_title_quality_check)
     TextView tvTitleQualityCheck;
-    @BindView(R.id.iv_expand)
-    ImageView ivExpand;
+    //    @BindView(R.id.iv_expand)
+    //    ImageView ivExpand;
+    @BindView(R.id.sp_chooese_name_spec)
+    AppCompatSpinner spChooeseNameSpec;
     private Material curToUpdateMaterial;//更新物料时：非NULL，上级界面传值
     private List<Material> materials;//更新物料时：非NULL，上级界面传值
+    private List<MaterialSpecInfo> specInfoList = new ArrayList<>();//下拉列表框数据
+    private ArrayList<String> titles = new ArrayList<>();
+    private Context mContext;
+    ;//下拉列表框对应的title
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -170,24 +191,40 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
+        mContext = this;
         setSupportActionBar(menu);
         menu.setNavigationOnClickListener(v -> {
             finish();
         });
-        bindingObserver();
 
-        getParmOfPrePage();
-        boolean isOuhuan;
-        if (curToUpdateMaterial != null) {//修改物料
+        boolean isOuhuan = true;
+        if (MaterialListActivity.getCurToUpdateMaterial() != null) {//修改物料
             menu.setTitle("修改物料");
+            getParmOfPrePage(true);
             isOuhuan = curToUpdateMaterial.isNeedChange == null || curToUpdateMaterial.isNeedChange.equals("2");
             doOnStateIsOuhuanOrBihuan(isOuhuan);//是否是偶换
             updateData(isOuhuan);
         } else {//新增物料
+            menu.setTitle("添加物料");
+            getParmOfPrePage(false);
             btnPreMaterial.setVisibility(View.GONE);
             btnNextMaterial.setVisibility(View.GONE);
-            menu.setTitle("添加物料");
+            rbOptionOptional.setChecked(true);//偶换
             doOnStateIsOuhuanOrBihuan(true);
+        }
+        bindingObserver();
+
+
+        if (isOuhuan) {
+            showLoading();
+            mPresenter.getMaterialSpecInfo();
+        }
+    }
+
+    private void getTitleList(List<MaterialSpecInfo> specInfoList) {
+        titles.clear();
+        for (MaterialSpecInfo materialSpecInfo : specInfoList) {
+            titles.add(materialSpecInfo.matName + " " + materialSpecInfo.modelsSpecifications);
         }
     }
 
@@ -202,19 +239,19 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
             etGoodsNo.setText(TextUtils.isEmpty(curToUpdateMaterial.matCode) ? "" : curToUpdateMaterial.matCode);
             etQrcode.setText(TextUtils.isEmpty(curToUpdateMaterial.identificationCode) ? "" : curToUpdateMaterial.identificationCode);
             etPrice.setText(TextUtils.isEmpty(curToUpdateMaterial.price) ? "" : curToUpdateMaterial.price);
-            etCount.setText(TextUtils.isEmpty(curToUpdateMaterial.qty) ? "" : curToUpdateMaterial.qty);
+            etCount.setText(String.valueOf(curToUpdateMaterial.qty));
         } else {//必换，数据回显到TextView
             tvManufacturer.setText(TextUtils.isEmpty(curToUpdateMaterial.supplier) ? "" : curToUpdateMaterial.supplier);
             tvPartNo.setText(TextUtils.isEmpty(curToUpdateMaterial.partsNo) ? "" : curToUpdateMaterial.partsNo);
             tvGoodsNo.setText(TextUtils.isEmpty(curToUpdateMaterial.matCode) ? "" : curToUpdateMaterial.matCode);
             tvQrcode.setText(TextUtils.isEmpty(curToUpdateMaterial.identificationCode) ? "" : curToUpdateMaterial.identificationCode);
             tvPrice.setText(TextUtils.isEmpty(curToUpdateMaterial.price) ? "" : curToUpdateMaterial.price);
-            tvCount.setText(TextUtils.isEmpty(curToUpdateMaterial.qty) ? "" : curToUpdateMaterial.qty);
+            tvCount.setText(String.valueOf(curToUpdateMaterial.qty));
         }
 
         tvNameSpec.setText(TextUtils.isEmpty(curToUpdateMaterial.matName) ? "" : curToUpdateMaterial.matName);
         try {
-            tvCost.setText(String.valueOf(Integer.parseInt(curToUpdateMaterial.price) * Integer.parseInt(curToUpdateMaterial.qty)));
+            tvCost.setText(String.valueOf(Double.parseDouble(curToUpdateMaterial.price) * curToUpdateMaterial.qty));
         } catch (NumberFormatException e) {
             e.printStackTrace();
             tvCost.setText("");
@@ -222,6 +259,7 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
 
         /*必换、偶换*/
         rbOptionOptional.setChecked(isOuhuan);
+
 
         /*来源属性*/
         int sourceAttr = Integer.parseInt(curToUpdateMaterial.source);
@@ -252,6 +290,7 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         /*检修情况*/
         boolean isCheckOk = curToUpdateMaterial.repairResult != null && curToUpdateMaterial.repairResult.equals("合格");
         rbCheckOk.setChecked(isCheckOk);
+        rbCheckNo.setChecked(!isCheckOk);
         /*安装位置*/
         etSetupPost.setText(TextUtils.isEmpty(curToUpdateMaterial.aboardPlace) ? "" : curToUpdateMaterial.aboardPlace);
         /*备注*/
@@ -295,17 +334,24 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         RxTextView.textChanges(etPrice).subscribe(charSequence -> {
             curToUpdateMaterial.price = charSequence.toString();
             try {
-                tvCost.setText(String.valueOf(Integer.parseInt(curToUpdateMaterial.price) * Integer.parseInt(curToUpdateMaterial.qty)));
+                tvCost.setText(String.valueOf(Double.parseDouble(curToUpdateMaterial.price) * curToUpdateMaterial.qty));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
+                tvCost.setText("");
             }
         });
         RxTextView.textChanges(etCount).subscribe(charSequence -> {
-            curToUpdateMaterial.qty = charSequence.toString();
             try {
-                tvCost.setText(String.valueOf(Integer.parseInt(curToUpdateMaterial.price) * Integer.parseInt(curToUpdateMaterial.qty)));
+                curToUpdateMaterial.qty = Integer.parseInt(charSequence.toString());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
+                curToUpdateMaterial.qty = 0;
+            }
+            try {
+                tvCost.setText(String.valueOf(Double.parseDouble(curToUpdateMaterial.price) * curToUpdateMaterial.qty));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                tvCost.setText("");
             }
         });
         RxTextView.textChanges(etSetupPost).subscribe(charSequence -> {
@@ -357,10 +403,10 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         RxRadioGroup.checkedChanges(rgIsDelivery).subscribe(integer -> {
             switch (integer) {
                 case R.id.rb_is_delivery_yes:
-                    curToUpdateMaterial.partsSource = "1";
+                    curToUpdateMaterial.isSend = "1";
                     break;
                 case R.id.rb_is_delivery_no:
-                    curToUpdateMaterial.partsSource = "0";
+                    curToUpdateMaterial.isSend = "0";
                     break;
             }
         });
@@ -368,16 +414,16 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         RxRadioGroup.checkedChanges(rgCheck).subscribe(integer -> {
             switch (integer) {
                 case R.id.rb_check_ok:
-                    curToUpdateMaterial.partsSource = "合格";
+                    curToUpdateMaterial.repairResult = "合格";
                     break;
                 case R.id.rb_check_no:
-                    curToUpdateMaterial.partsSource = "不合格";
+                    curToUpdateMaterial.repairResult = "不合格";
                     break;
             }
         });
 
         //工长
-        RxRadioGroup.checkedChanges(rgWorkLeaderCheck).subscribe(integer -> {
+        RxRadioGroup.checkedChanges(rgWorkLeaderCheck).skip(1).subscribe(integer -> {
             Material.Quality quality = getQualityWithType(curToUpdateMaterial, "工长", true);
             switch (integer) {
                 case R.id.rb_work_leader_check_ok:
@@ -393,7 +439,7 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         });
 
         //质检
-        RxRadioGroup.checkedChanges(rgQualityCheck).subscribe(integer -> {
+        RxRadioGroup.checkedChanges(rgQualityCheck).skip(1).subscribe(integer -> {
             Material.Quality quality = getQualityWithType(curToUpdateMaterial, "质检", true);
             switch (integer) {
                 case R.id.rb_quality_check_ok:
@@ -411,21 +457,24 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
     }
 
     private Material.Quality getQualityWithType(Material curToUpdateMaterial, String type, boolean isNeedCreateWhenNull) {
+        if (curToUpdateMaterial.qualityList == null) {
+            curToUpdateMaterial.qualityList = new ArrayList<>();
+        }
         for (Material.Quality quality : curToUpdateMaterial.qualityList) {
             if (quality.qualityType.equals(type)) {
                 return quality;
             }
         }
-
         if (isNeedCreateWhenNull) {
             Material.Quality cre = new Material.Quality();
             cre.createTime = TimeUtils.date2String(new Date(), new SimpleDateFormat("yyyy-MM-dd"));
             cre.creater = cre.qualityEmpId = cre.updator = SysInfo.emp.getEmpcode();
             cre.qualityEmpName = cre.createrName = cre.updatorName = SysInfo.emp.getEmpname();
             cre.qualityIdx = "";
-            cre.qualityResult = "合格";
+            cre.qualityResult = "";
             cre.qualityType = type;
-            cre.qualityUpdateTime = TimeUtils.date2String(new Date(), new SimpleDateFormat("yyyy-MM-dd"));
+            cre.createTime = cre.qualityUpdateTime = TimeUtils.date2String(new Date(), new SimpleDateFormat("yyyy-MM-dd"));
+            curToUpdateMaterial.qualityList.add(cre);
             return cre;
         }
         return null;
@@ -459,23 +508,73 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
     }
 
     @Override
-    public void saveOrUpdateSuccess(String msg) {
+    public void saveOrUpdateSuccess(List<Material> data, String msg) {
+        hideLoading();
+        ToastUtils.showShort(msg);
+        EventBus.getDefault().post(curToUpdateMaterial, EventBusTags.NEED_TO_REFRESH_MATERIAL_LIST);//通知更新
+        finish();
 
+        /*if (data != null && data.size() != 0) {
+            curToUpdateMaterial = data.get(0);
+            EventBus.getDefault().post(null, EventBusTags.NEED_TO_REFRESH_MATERIAL_LIST);//通知更新
+            if (menu.getTitle().toString().contains("添加")) {
+                updateData(true);//添加物料只能是偶换
+            } else {
+                boolean isOuhuan = curToUpdateMaterial.isNeedChange == null || curToUpdateMaterial.isNeedChange.equals("2");
+                doOnStateIsOuhuanOrBihuan(isOuhuan);//是否是偶换
+                updateData(isOuhuan);
+            }
+        }*/
     }
 
     @Override
     public void saveOrUpdateFail(String msg) {
-
+        ToastUtils.showShort(msg);
+        hideLoading();
     }
 
     @Override
     public void getMaterialSpecInfoSuccess(List<MaterialSpecInfo> specInfo) {
+        hideLoading();
 
+        specInfoList.clear();
+        for (MaterialSpecInfo materialSpecInfo : specInfo) {
+            specInfoList.add(materialSpecInfo);
+        }
+
+        getTitleList(specInfoList);
+        //适配器
+        ArrayAdapter<String> arrAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, titles);
+        //设置样式
+        arrAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //加载适配器
+        spChooeseNameSpec.setAdapter(arrAdapter);
+        spChooeseNameSpec.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            boolean isInit = true;
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isInit && MaterialListActivity.getCurToUpdateMaterial() != null) {
+                    isInit = false;
+                } else {
+                    MaterialSpecInfo spec = specInfoList.get(position);
+                    curToUpdateMaterial.matName = spec.matName;
+                    curToUpdateMaterial.modelsSpecifications = spec.modelsSpecifications;
+                    etManufacturer.setText(spec.supplier);
+                    etGoodsNo.setText(spec.matCode);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     @Override
     public void getMaterialSpecInfoFail(String msg) {
-
+        hideLoading();
+        ToastUtils.showShort(msg);
     }
 
     @Override
@@ -484,8 +583,12 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
     }
 
     @Override
-    public void getParmOfPrePage() {
-        curToUpdateMaterial = MaterialListActivity.curToUpdateMaterial;
+    public void getParmOfPrePage(boolean isUpdateMaterial) {
+        if (isUpdateMaterial) {
+            curToUpdateMaterial = MaterialListActivity.getCurToUpdateMaterial();
+        } else {
+            curToUpdateMaterial = new Material(HVTestBaseInfoActivity.getActivityIdx(), HVTestBaseInfoActivity.getIdx(), SysInfo.emp.getUserid(), SysInfo.emp.getEmpname());
+        }
         materials = MaterialListActivity.getSourceData();
     }
 
@@ -493,13 +596,17 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
     public void doOnStateIsOuhuanOrBihuan(boolean isOuhuan) {
         if (isOuhuan) {
             llChooeseNameSpec.setBackground(getResources().getDrawable(R.drawable.bg_table_grid));
-            ivExpand.setVisibility(View.VISIBLE);
+            //            ivExpand.setVisibility(View.VISIBLE);
+            spChooeseNameSpec.setVisibility(View.VISIBLE);
+            tvNameSpec.setVisibility(View.GONE);
         } else {//必换 - 更新界面
             /*UI不可修改部分*/
             llChooeseNameSpec.setBackgroundColor(Color.TRANSPARENT);
-            ivExpand.setVisibility(View.GONE);
+            spChooeseNameSpec.setVisibility(View.GONE);
+            tvNameSpec.setVisibility(View.VISIBLE);
+            //            ivExpand.setVisibility(View.GONE);
         }
-
+        /*  !isOuhuan  修改-必换：隐藏输入框，显示文本框*/
         etManufacturer.setVisibility(!isOuhuan ? View.GONE : View.VISIBLE);
         tvManufacturer.setVisibility(!isOuhuan ? View.VISIBLE : View.GONE);
 
@@ -518,7 +625,7 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
         etCount.setVisibility(!isOuhuan ? View.GONE : View.VISIBLE);
         tvCount.setVisibility(!isOuhuan ? View.VISIBLE : View.GONE);
 
-        changeTheRadioGroupClickable(rgIsOption, isOuhuan);
+        changeTheRadioGroupClickable(rgIsOption, false);//偶换，必换，永远不可以修改
         changeTheRadioGroupClickable(rgSourceAttr, isOuhuan);
         changeTheRadioGroupClickable(rgPartAttr, isOuhuan);
     }
@@ -529,19 +636,29 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
             RadioButton btn = (RadioButton) radioGroup.getChildAt(i);
             btn.setClickable(clickAble);
         }
-
     }
-
-    ;
 
     @Override
     public void toScanQRCode() {
-
+        RxPermissions rxPermissions = new RxPermissions(this);
+        // Must be done during an initialization phase like onCreate
+        rxPermissions.requestEachCombined(Manifest.permission.CAMERA, Manifest.permission.VIBRATE).subscribe(permission -> { // will emit 1 Permission object
+            if (permission.granted) {
+                // All permissions are granted !
+                Intent intent = new Intent(mContext, CaptureActivity.class);
+                startActivityForResult(intent, BusinessConstant.REQ_SCAN_QRCODE);
+            } else if (permission.shouldShowRequestPermissionRationale) {
+                // At least one denied permission without ask never again
+            } else {
+                // At least one denied permission with ask never again
+                // Need to go to the settings
+            }
+        });
     }
 
     @Override
     public void scanQRCodeSuccess(String qrcode) {
-
+        etQrcode.setText(qrcode);
     }
 
     @Override
@@ -549,11 +666,35 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /**
+         * 处理二维码扫描结果
+         */
+        if (requestCode == BusinessConstant.REQ_SCAN_QRCODE) {
+            //处理扫描结果（在界面上显示）
+            if (null != data) {
+                Bundle bundle = data.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                    String result = bundle.getString(CodeUtils.RESULT_STRING);
+                    scanQRCodeSuccess(result);
+                } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                    scanQRCodeFail("解析二维码失败");
+                }
+            }
+        }
+    }
+
     @OnClick({R.id.iv_scan_qrcode, R.id.tv_title_work_leader, R.id.btn_pre_material, R.id.btn_save_or_update, R.id.btn_next_material, R.id.tv_title_quality_check, R.id.ll_chooese_name_spec})
     public void onViewClicked(View view) {
+        boolean isOuhuan = true;
         switch (view.getId()) {
             case R.id.iv_scan_qrcode:
-                ToastUtils.showShort("开发中...");
+                toScanQRCode();
                 break;
             case R.id.tv_title_work_leader://工长
                 if (view.getTag() != null) {
@@ -597,15 +738,41 @@ public class SaveOrUpdateMaterialActivity extends BaseActivity<SaveOrUpdateMater
                 int p1 = materials.indexOf(curToUpdateMaterial);
                 if (p1 - 1 < materials.size() && p1 - 1 >= 0) {
                     curToUpdateMaterial = materials.get(p1 - 1);
+                } else {
+                    ToastUtils.showShort("没有了");
                 }
+                showLoading();
+                isOuhuan = curToUpdateMaterial.isNeedChange == null || curToUpdateMaterial.isNeedChange.equals("2");
+                doOnStateIsOuhuanOrBihuan(isOuhuan);//是否是偶换
+                updateData(isOuhuan);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideLoading();
+                    }
+                }, 300);
                 break;
             case R.id.btn_save_or_update:
+                showLoading();
+                mPresenter.saveOrUpdateMaterial(curToUpdateMaterial);
                 break;
             case R.id.btn_next_material:
                 int p2 = materials.indexOf(curToUpdateMaterial);
                 if (p2 + 1 < materials.size()) {
                     curToUpdateMaterial = materials.get(p2 + 1);
+                } else {
+                    ToastUtils.showShort("没有了");
                 }
+                showLoading();
+                isOuhuan = curToUpdateMaterial.isNeedChange == null || curToUpdateMaterial.isNeedChange.equals("2");
+                doOnStateIsOuhuanOrBihuan(isOuhuan);//是否是偶换
+                updateData(isOuhuan);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideLoading();
+                    }
+                }, 300);
                 break;
             case R.id.ll_chooese_name_spec:
                 mPresenter.getMaterialSpecInfo();

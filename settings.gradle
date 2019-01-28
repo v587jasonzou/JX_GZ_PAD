@@ -1,1 +1,1 @@
-include ':app',":arms", ':utilcode'
+include ':app',":arms", ':utilcode',":lib-zxing"

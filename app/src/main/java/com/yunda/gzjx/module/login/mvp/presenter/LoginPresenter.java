@@ -107,12 +107,6 @@ public class LoginPresenter extends BasePresenter<LoginContract.Model, LoginCont
                     public void onError(Throwable e) {
                         SysInfo.cookieStore.clear();
                         mRootView.hideLoading();
-
-                        // TODO: 2019/1/16 debug
-                        if (true) {
-                            mRootView.toMainActivity();
-                        }
-
                         ToastUtils.showShort("登录失败请重试！"+e.getMessage());
                     }
 

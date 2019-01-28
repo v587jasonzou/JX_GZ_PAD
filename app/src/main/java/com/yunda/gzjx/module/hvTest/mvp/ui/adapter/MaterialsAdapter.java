@@ -2,9 +2,11 @@ package com.yunda.gzjx.module.hvTest.mvp.ui.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.SizeUtils;
@@ -41,10 +43,16 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Mate
 
     @Override
     public void onBindViewHolder(@NonNull MaterialViewHolder holder, int position) {
-        holder.tvMaterialName.setText(datas.get(position).matName);
-        holder.tvCount.setText(datas.get(position).qty);
-        holder.tvSpec.setText(datas.get(position).modelsSpecifications);
-        holder.tvIsOptionPart.setText(datas.get(position).isNeedChange);
+        Material data = datas.get(position);
+        holder.tvMaterialName.setText(data.matName);
+        holder.tvCount.setText(String.valueOf(data.qty));
+        holder.tvSpec.setText(data.modelsSpecifications);
+        holder.tvIsOptionPart.setText("2".equals(data.isNeedChange) ? "偶换" : "必换");
+
+        holder.tvGoodsNo.setText(TextUtils.isEmpty(data.matCode) ? "" : data.matCode);
+        boolean acceptOrNot = "3".equals(data.requisitionStatus) ? true : false;
+        holder.cbAcceptStatus.setChecked(acceptOrNot);
+        holder.cbAcceptStatus.setText(acceptOrNot ? "已领" : "未领");
     }
 
     public void delItem(int pos) {
@@ -79,6 +87,10 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Mate
         TextView tvCount;
         @BindView(R.id.tv_is_option_part)
         TextView tvIsOptionPart;
+        @BindView(R.id.tv_goods_no)
+        TextView tvGoodsNo;
+        @BindView(R.id.cb_accept_status)
+        CheckBox cbAcceptStatus;
 
         public MaterialViewHolder(@NonNull View itemView) {
             super(itemView);

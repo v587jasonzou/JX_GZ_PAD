@@ -6,10 +6,13 @@ import com.jess.arms.di.scope.ActivityScope;
 import com.jess.arms.http.imageloader.ImageLoader;
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.mvp.BasePresenter;
+import com.jess.arms.utils.RxLifecycleUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.yunda.gzjx.module.hvTest.mvp.contract.HVTestBaseInfoContract;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.jessyan.rxerrorhandler.core.RxErrorHandler;
 
 
@@ -32,6 +35,23 @@ public class HVTestBaseInfoPresenter extends BasePresenter<HVTestBaseInfoContrac
     @Inject
     public HVTestBaseInfoPresenter(HVTestBaseInfoContract.Model model, HVTestBaseInfoContract.View rootView) {
         super(model, rootView);
+    }
+
+    /**
+     * @param trainIdx       机车IDX
+     * @param workStationIdx 工位idx
+     */
+    public void getBaseInfo(String trainIdx, String workStationIdx) {
+        mModel.getTrainBaseInfo(trainIdx, workStationIdx).compose(RxLifecycleUtils.bindUntilEvent(mRootView, ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
+            if (response.getSuccess()) {
+                mRootView.getTrainBaseInfoSuccess(response.getData().get(0));
+            }else {
+                mRootView.getTrainBaseInfoFail("");
+            }
+        }, throwable -> {
+            throwable.printStackTrace();
+            mRootView.getTrainBaseInfoFail(throwable.getMessage());
+        });
     }
 
     @Override

@@ -8,4 +8,7 @@ package com.yunda.gzjx.constant;
  */
 public class BusinessConstant {
     public static final String JX_RECORD_UN_QUALIFIED = "21";//检修记录 - 不合格
+
+
+    public static final int REQ_SCAN_QRCODE = 1;//请求扫描二维码
 }

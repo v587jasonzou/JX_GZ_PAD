@@ -20,7 +20,7 @@ import io.reactivex.Observable;
 public interface SaveOrUpdateMaterialContract {
     //对于经常使用的关于UI的方法可以定义到IView中,如显示隐藏进度条,和显示文字消息
     interface View extends IView {
-        void saveOrUpdateSuccess(String msg);
+        void saveOrUpdateSuccess(List<Material> data, String msg);
         void saveOrUpdateFail(String msg);
 
         void getMaterialSpecInfoSuccess(List<MaterialSpecInfo> specInfo);
@@ -28,7 +28,7 @@ public interface SaveOrUpdateMaterialContract {
 
         void nextMaterial();
 
-        void getParmOfPrePage();
+        void getParmOfPrePage(boolean isUpdateMaterial);
 
         /**
          * "必换/偶换"，执行不同的操作限制，偶换(其中新增物料只能是偶换)大部分可编辑，必换小部分可编辑
@@ -57,7 +57,7 @@ public interface SaveOrUpdateMaterialContract {
          * @param materialNew
          * @return
          */
-        Observable<BaseResponse> saveOrUpdateSuccess(Material materialNew);
+        Observable<BaseResponse<List<Material>>> saveOrUpdateSuccess(Material materialNew);
 
         /**
          * 物料名称/规格型号/生产厂家...

@@ -160,14 +160,13 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveAll:
-                Toast.makeText(this, "保存所有", Toast.LENGTH_SHORT).show();
-
                 List<JXTask> updates = new ArrayList<>();
                 for (JXTask jxTask : adapter.getInfos()) {
                     if (jxTask.isSaveLaterChecked) {
                         updates.add(jxTask);
                     }
                 }
+                showLoading();
                 mPresenter.updateTaskInfo(updates);
                 break;
         }
@@ -185,18 +184,6 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
 
     @Override
     public void getTasksFail(String message) {
-        // TODO: 2019/1/15 删掉模拟数据
-//        if (false) {//模拟数据
-//            hideLoading();
-//            srl.finishRefresh();
-//            String s = "[{\"idx\":\"B7A7365512C14C1B9D8D5F3D7680184C\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"制动监测子系统试验：\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"C4BC0E4DE2454329A273BDD135AA572F\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"确保机车在试验之前泄露试验良好，停放缸压力传感器，均衡缸压力传感器，折角塞门关闭流量传感器安装良好\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"30060C4C532B463EA9D7DF0ADD7BFC21\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"机车进行紧急制动试验时，列车管彻底减压后，在6A 音视频显示终端，列车管压力为0kPa（参考值大于等于0kPa、小于等于4kPa）。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"C17E65D574AB40B0A075A9DBD2107FCF\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"机车进行紧急制动试验时，均衡缸彻底减压后，在6A 音视频显示终端，均衡缸压力为0kPa（参考值大于等于0kPa、小于等于4kPa）。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"04AE556037F145F58D6801F382919D0E\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"机车无充排风时，在6A 音视频显示终端界面，当前状态为“无充排风”，当前流量为0，流量计状态“正常”，贯通辆数状态为“----”\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"79C9C11AA2614727868D4559B7DC3812\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"将机车自阀移至运转位，将列车制动管风压充至定压（500kPa或600kPa）并稳定后，自阀减压140Kpa或170Kpa，查看并记录音视频显示终端【监控数据】【制动】界面显示的贯通辆数，应为0-3；\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"3A18243A43DF45BFA8BD04397BC02C29\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"减压操作并显示贯通辆数10s后，自阀再充风至定压并稳定，查看并记录音视频显示终端【监控数据】【制动】界面显示的贯通辆数，应为0-3。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"F25689B15C754B27972AAC4991807E02\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"视频监控子系统\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"5987E829401641959926F7A058C93DCD\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"在音视频显示终端【视频图像】界面能够看到各摄像头监控区域的视频图像。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"E6A7793F0CF544DC8A4DFD20F8B5C19B\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"在【视频图像】界面点击【单画面】，依次查看各通道视频信号，应清晰稳定无闪烁。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"D7FCBB56E98D4D6BAE3F4E45053596EE\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"在【视频图像】界面点击【四画面】，查看各通道的视频信号，应清晰稳定无闪烁。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"142497EFC5D74F069252489B66A4FD96\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"在音视频显示终端的主界面无摄像头故障信息。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"1E5D49C0AC374C26A2C9BB132B33EAA0\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"绝缘检测箱试验\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"6C2B5E7DA2B94DAA9D68B42859239FA6\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"确认机车状态完好；6A 系统供电正常；机车电钥匙在0 位；\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"223460949E7146EBBFF0C113F094DC62\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"使用机车蓝钥匙，打开绝缘检测箱的电源，系统进入自检状态，一分钟内自检完成，系统应无故障发生。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"EE02F34307A748B8A36EF567A16D22E7\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"点击【出库检测】按钮，绝缘箱能够正常开始检测，若车顶绝缘状态不良，则应绝缘报警灯亮起，否则不亮。\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"1A78D04FF5384905ABF735F7F2E2FC1E\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"走行监测子系统试验\",\"remarks\":\" \",\"detectResultList\":[]},{\"idx\":\"E881AE0029AE42E9B1A8ADFAC5DB8AD5\",\"workEmpId\":\" \",\"status\":\"10\",\"qualityList\":[],\"workEmpName\":\" \",\"repairContent\":\"在音视频显示终端【监控数据】【走行1】界面看到数据接收时间更新，无传感器开路显示。\",\"remarks\":\" \",\"detectResultList\":[]}]";
-//            List<JXTask> jxTasks = new GsonBuilder().create().fromJson(s,new TypeToken<List<JXTask>>(){}.getType());
-//            this.jxTasks.clear();
-//            this.jxTasks.addAll(jxTasks);
-//            adapter.notifyDataSetChanged();
-//            return;
-//        }
-
         hideLoading();
         srl.finishRefresh();
         ToastUtils.showShort("数据加载失败！" + message);
@@ -212,7 +199,6 @@ public class JXTasksOfProjectActivity extends BaseActivity<JXTasksOfProjectPrese
             }
             isSaveAll = false;
         }
-//        adapter.notifyDataSetChanged();
         srl.autoRefresh();
     }
 

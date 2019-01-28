@@ -25,9 +25,6 @@ public interface MaterialListContract {
         void delMaterialSuccess(int posDeleted);
         void delMaterialFail(String msg);
 
-//        void showDataPage();
-//        void showNoDataPage();
-
         void searchMaterialsSuccess(List<Material> list);
 
         void toAddMaterialPage();

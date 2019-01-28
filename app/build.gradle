@@ -30,9 +30,9 @@ android {
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
             buildConfigField "boolean", "USE_CANARY", "false"
-            minifyEnabled true
-            shrinkResources true
-            zipAlignEnabled true
+            minifyEnabled false
+            shrinkResources false
+            zipAlignEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -106,4 +106,5 @@ dependencies {
     implementation rootProject.ext.dependencies["retrofit-adapter-rxjava2"]
 
     implementation project(':utilcode')
+    implementation project(path: ':lib-zxing')
 }

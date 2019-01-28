@@ -1,6 +1,7 @@
 package com.yunda.gzjx.module.hvTest.mvp.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ public class JXProjectsAdapter extends DefaultAdapter<JXProject> {
         TextView tvProjectName;
         @BindView(R.id.progress)
         TextView progress;
+        @BindView(R.id.tvOrder)
+        TextView tvOrder;
 
         public JXProjectHolder(View itemView) {
             super(itemView);
@@ -49,7 +52,24 @@ public class JXProjectsAdapter extends DefaultAdapter<JXProject> {
         public void setData(JXProject data, int position) {
             if (data != null) {
                 tvProjectName.setText(data.workCardName != null ? data.workCardName : "");
-                progress.setText(data.unhandleCount+"/"+data.allCount);
+                progress.setText(data.unhandleCount + "/" + data.allCount);
+                if (!TextUtils.isEmpty(data.RN)) {
+                    tvOrder.setVisibility(View.VISIBLE);
+                    try {
+                        int seq = Integer.parseInt(data.RN);
+                        if (seq > 99) {
+                            tvOrder.setText("99+");
+                        }else {
+                            tvOrder.setText(data.RN);
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        tvOrder.setVisibility(View.GONE);
+                    }
+                } else {
+                    tvOrder.setVisibility(View.GONE);
+                    tvOrder.setText("");
+                }
             }
         }
 

@@ -1,7 +1,5 @@
 package com.yunda.gzjx.module.hvTest.mvp.ui.holder;
 
-import android.graphics.Color;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -16,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.jess.arms.base.BaseHolder;
 import com.jess.arms.utils.ArmsUtils;
 import com.orhanobut.logger.Logger;
@@ -48,34 +47,18 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
     RecyclerView rvTaskCondition;
     @BindView(R.id.tv_handle_man)
     TextView tvHandleMan;
-    @BindView(R.id.checkEachotherOk)
-    AppCompatRadioButton checkEachotherOk;
-    @BindView(R.id.checkEachotherNo)
-    AppCompatRadioButton checkEachotherNo;
     @BindView(R.id.checkEachother)
     RadioGroup checkEachother;
     @BindView(R.id.tv_check_eachother)
     TextView tvCheckEachother;
-    @BindView(R.id.workerLeaderOk)
-    AppCompatRadioButton workerLeaderOk;
-    @BindView(R.id.workerLeaderNo)
-    AppCompatRadioButton workerLeaderNo;
     @BindView(R.id.workerLeader)
     RadioGroup workerLeader;
     @BindView(R.id.tv_work_leader_check_res)
     TextView tvWorkLeaderCheckRes;
-    @BindView(R.id.acceptanceCheckOk)
-    AppCompatRadioButton acceptanceCheckOk;
-    @BindView(R.id.acceptanceCheckNo)
-    AppCompatRadioButton acceptanceCheckNo;
     @BindView(R.id.acceptanceCheck)
     RadioGroup acceptanceCheck;
     @BindView(R.id.tv_acceptance_check_res)
     TextView tvAcceptanceCheckRes;
-    @BindView(R.id.qualityCheckOk)
-    AppCompatRadioButton qualityCheckOk;
-    @BindView(R.id.qualityCheckNo)
-    AppCompatRadioButton qualityCheckNo;
     @BindView(R.id.qualityCheck)
     RadioGroup qualityCheck;
     @BindView(R.id.tv_quality_check_res)
@@ -88,8 +71,10 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
     CheckBox rbSaveLater;
     @BindView(R.id.rg_save)
     LinearLayout rgSave;
+    @BindView(R.id.undo)
+    TextView undo;
     private JXTask data;
-    private int position;
+    private boolean isRefreshing;//正在加载数据,不响RadioGroup应事件监听
 
     public JXTaskHolder(JXTasksOfProjectContract.View view, JXTasksOfProjectPresenter presenter, View itemView) {
         super(itemView);
@@ -102,7 +87,6 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
             public void onClick(View v) {
                 List<JXTask> list = new ArrayList<>();
                 list.add(data);
-
                 view.showLoading();
                 presenter.updateTaskInfo(list);
             }
@@ -119,6 +103,9 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
         RadioGroup.OnCheckedChangeListener listener = new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (isRefreshing) {
+                    return;
+                }
                 if (data == null) {
                     return;
                 }
@@ -142,6 +129,12 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
                     default:
                         Logger.d("未知的单选按钮组 RadioGroup");
                 }
+
+                /**
+                 * --------------------
+                 * 此处创建了一条不含idx的本地操作项，只应该在手动选择时执行创建，其他情况不应该执行
+                 * --------------------
+                 */
                 JXTask.Quality quality = getQualityTest(qualityStr);
                 String res = "";
                 switch (checkedId) {
@@ -182,7 +175,7 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
             }
         }
 
-        /*不存在*/
+        /*不存在(没有idx的是临时项，可以从qualityList中删除)*/
         JXTask.Quality quality = new JXTask.Quality(SysInfo.emp.getEmpid().toString(), SysInfo.emp.getEmpname(), "", "", qualityStr, "", data.idx);
         data.qualityList.add(quality);
         return quality;
@@ -191,22 +184,35 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
     @Override
     public void setData(JXTask data, int position) {
         this.data = data;
-        this.position = position;
         tvTaskName.setText(data.repairContent);
         etComment.setText(data.remarks);
         etComment.addTextChangedListener(this);
-        if (data.status == BusinessConstant.JX_RECORD_UN_QUALIFIED) {//检修记录不合格
-            tvTaskName.setBackgroundColor(itemView.getResources().getColor(R.color.colorAccent));
+        if (data.status == BusinessConstant.JX_RECORD_UN_QUALIFIED || containNotOkQuality(data)) {//检修记录不合格
+            tvTaskName.setTextColor(itemView.getResources().getColor(R.color.red));
         } else {
-            tvTaskName.setBackgroundColor(Color.TRANSPARENT);
+            tvTaskName.setTextColor(itemView.getResources().getColor(R.color.text_color));
         }
 
         rbSaveLater.setChecked(data.isSaveLaterChecked);
 
         /*作业者...*/
         tvHandleMan.setText(data.workEmpName != null ? data.workEmpName : "");
-        updateQualityState(data);
+        updateQualityState(data, position);//检测情况
         updateTaskCondition(data);//作业情况
+        isRefreshing = false;
+    }
+
+    private boolean containNotOkQuality(JXTask data) {
+        if (data == null || data.qualityList == null || data.qualityList.size() == 0) {
+            return false;
+        } else {
+            for (JXTask.Quality quality : data.qualityList) {
+                if (!quality.idx.isEmpty() && "不合格".equals(quality.repairResult)) {//修改项
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /**
@@ -217,7 +223,7 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
     private void updateTaskCondition(JXTask data) {
         ArmsUtils.configRecyclerView(rvTaskCondition, new LinearLayoutManager(itemView.getContext()));
         if (rvTaskCondition.getAdapter() == null) {
-            rvTaskCondition.setAdapter(new TaskConditionAdapter(data,data.detectResultList));
+            rvTaskCondition.setAdapter(new TaskConditionAdapter(data, data.detectResultList));
         }
         ((TaskConditionAdapter) rvTaskCondition.getAdapter()).updateData(data.detectResultList);
         rvTaskCondition.getAdapter().notifyDataSetChanged();
@@ -228,38 +234,49 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
      *
      * @param data
      */
-    private void updateQualityState(JXTask data) {
+    private void updateQualityState(JXTask data, int position) {
+        isRefreshing = true;
+
+        if (position == 0) {
+            boolean b = true;
+        }
         /*重置状态*/
+        tvWorkLeaderCheckRes.setVisibility(View.GONE);
+        workerLeader.setVisibility(View.VISIBLE);
         tvWorkLeaderCheckRes.setText("");
-        workerLeaderOk.setChecked(false);
-        workerLeaderNo.setChecked(false);
+        workerLeader.clearCheck();
 
+        tvCheckEachother.setVisibility(View.GONE);
+        checkEachother.setVisibility(View.VISIBLE);
         tvCheckEachother.setText("");
-        checkEachotherOk.setChecked(false);
-        checkEachotherNo.setChecked(false);
+        checkEachother.clearCheck();
 
+        tvQualityCheckRes.setVisibility(View.GONE);
+        qualityCheck.setVisibility(View.VISIBLE);
         tvQualityCheckRes.setText("");
-        qualityCheckOk.setChecked(false);
-        qualityCheckNo.setChecked(false);
+        qualityCheck.clearCheck();
 
+        tvAcceptanceCheckRes.setVisibility(View.GONE);
+        acceptanceCheck.setVisibility(View.VISIBLE);
         tvAcceptanceCheckRes.setText("");
-        acceptanceCheckOk.setChecked(false);
-        acceptanceCheckNo.setChecked(false);
+        acceptanceCheck.clearCheck();
 
-        /*设置*/
+        /*回显数据*/
         for (int i = 0; data.qualityList != null && i < data.qualityList.size(); i++) {//质量检查
             JXTask.Quality check = data.qualityList.get(i);
-            String sb = check.checkEmpName+" " + check.updateTime +" "+ check.repairResult;
+            String sb = check.checkEmpName + " " + check.updateTime + " " + check.repairResult;
             switch (check.qualityItem) {
                 case "工长":
                     if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
                         tvWorkLeaderCheckRes.setVisibility(View.GONE);
                         workerLeader.setVisibility(View.VISIBLE);
 
-                        if (check.repairResult.equals("合格")) {
-                            workerLeaderOk.setChecked(true);
-                        } else {
-                            workerLeaderNo.setChecked(true);
+                        if ("合格".equals(check.repairResult)) {
+                            workerLeader.check(R.id.workerLeaderOk);
+                            //                            workerLeaderOk.setChecked(true);
+                        } else if ("不合格".equals(check.repairResult)) {
+                            workerLeader.check(R.id.workerLeaderNo);
+                            //workerLeaderNo.setChecked(true);
                         }
                     } else {//服务端返回的他人编辑的数据
                         tvWorkLeaderCheckRes.setVisibility(View.VISIBLE);
@@ -270,34 +287,38 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
                     break;
                 case "互检":
                     if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
-                        checkEachother.setVisibility(View.VISIBLE);
                         tvCheckEachother.setVisibility(View.GONE);
+                        checkEachother.setVisibility(View.VISIBLE);
 
-                        if (check.repairResult.equals("合格")) {
-                            checkEachotherOk.setChecked(true);
-                        } else {
-                            checkEachotherNo.setChecked(true);
+                        if ("合格".equals(check.repairResult)) {
+                            checkEachother.check(R.id.checkEachotherOk);
+                            //                            checkEachotherOk.setChecked(true);
+                        } else if ("不合格".equals(check.repairResult)) {
+                            checkEachother.check(R.id.checkEachotherNo);
+                            //                            checkEachotherNo.setChecked(true);
                         }
                     } else {
-                        checkEachother.setVisibility(View.GONE);
                         tvCheckEachother.setVisibility(View.VISIBLE);
+                        checkEachother.setVisibility(View.GONE);
 
                         tvCheckEachother.setText(sb);
                     }
                     break;
                 case "质检":
                     if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
-                        qualityCheck.setVisibility(View.VISIBLE);
                         tvQualityCheckRes.setVisibility(View.GONE);
+                        qualityCheck.setVisibility(View.VISIBLE);
 
-                        if (check.repairResult.equals("合格")) {
-                            qualityCheckOk.setChecked(true);
-                        } else {
-                            qualityCheckNo.setChecked(true);
+                        if ("合格".equals(check.repairResult)) {
+                            qualityCheck.check(R.id.qualityCheckOk);
+                            //                            qualityCheckOk.setChecked(true);
+                        } else if ("不合格".equals(check.repairResult)) {
+                            qualityCheck.check(R.id.qualityCheckNo);
+                            //                            qualityCheckNo.setChecked(true);
                         }
                     } else {
-                        qualityCheck.setVisibility(View.GONE);
                         tvQualityCheckRes.setVisibility(View.VISIBLE);
+                        qualityCheck.setVisibility(View.GONE);
 
                         tvQualityCheckRes.setText(sb);
                     }
@@ -305,13 +326,15 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
                     break;
                 case "验收":
                     if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
-                        acceptanceCheck.setVisibility(View.VISIBLE);
                         tvAcceptanceCheckRes.setVisibility(View.GONE);
+                        acceptanceCheck.setVisibility(View.VISIBLE);
 
-                        if (check.repairResult.equals("合格")) {
-                            acceptanceCheckOk.setChecked(true);
-                        } else {
-                            acceptanceCheckNo.setChecked(true);
+                        if ("合格".equals(check.repairResult)) {
+                            acceptanceCheck.check(R.id.acceptanceCheckOk);
+                            //                            acceptanceCheckOk.setChecked(true);
+                        } else if ("不合格".equals(check.repairResult)) {
+                            acceptanceCheck.check(R.id.acceptanceCheckNo);
+                            //                            acceptanceCheckNo.setChecked(true);
                         }
                     } else {
                         acceptanceCheck.setVisibility(View.GONE);
@@ -345,6 +368,50 @@ public class JXTaskHolder extends BaseHolder<JXTask> implements TextWatcher {
                 qualityCheck.setVisibility(View.VISIBLE);
                 break;
         }*/
+    }
+
+    @OnClick({R.id.undo})
+    public void undo(View view) {//撤销所有本地新增修改的检查项，默认不选择任何项
+        if (data == null || data.qualityList == null) {
+            return;
+        }
+        /*设置*/
+        for (int i = data.qualityList.size() - 1; i >= 0; i--) {//质量检查
+            JXTask.Quality check = data.qualityList.get(i);
+            data.qualityList.remove(check);
+            switch (check.qualityItem) {
+                case "工长":
+                    if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
+                        tvWorkLeaderCheckRes.setVisibility(View.GONE);
+                        workerLeader.setVisibility(View.VISIBLE);
+                        workerLeader.clearCheck();
+                    }
+                    break;
+                case "互检":
+                    if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
+                        tvCheckEachother.setVisibility(View.GONE);
+                        checkEachother.setVisibility(View.VISIBLE);
+                        checkEachother.clearCheck();
+                    }
+                    break;
+                case "质检":
+                    if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
+                        tvQualityCheckRes.setVisibility(View.GONE);
+                        qualityCheck.setVisibility(View.VISIBLE);
+                        qualityCheck.clearCheck();
+                    }
+                    break;
+                case "验收":
+                    if (TextUtils.isEmpty(check.idx)) {//本地编辑产生的数据没有qualityIdx
+                        tvAcceptanceCheckRes.setVisibility(View.GONE);
+                        acceptanceCheck.setVisibility(View.VISIBLE);
+                        acceptanceCheck.clearCheck();
+                    }
+                    break;
+            }
+        }
+        ToastUtils.showShort("本地选择已撤销操作");
+
     }
 
     @Override

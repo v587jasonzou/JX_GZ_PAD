@@ -64,6 +64,7 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
     private ReqJXProjcetsParm parm;
     private List<JXProject> jxProjects = new ArrayList<>();
     private JXProjectsAdapter adapter;
+    private String trainTypeNoStr;
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -78,14 +79,17 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
+        trainIDX = getIntent().getStringExtra("trainIDX");
+        relationIdx = getIntent().getStringExtra("relationIdx");
+        trainTypeNoStr = getIntent().getStringExtra("trainTypeNo");
+
         menuTp.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        trainIDX = getIntent().getStringExtra("trainIDX");
-        relationIdx = getIntent().getStringExtra("relationIdx");
+        menuTp.setTitle(trainTypeNoStr);
         parm = new ReqJXProjcetsParm(trainIDX, relationIdx, 1, pageSize);
 
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -193,6 +197,7 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
         }
         this.jxProjects.addAll(jxProjects);
         adapter.notifyDataSetChanged();
+//        if (jxProjects==null||jxProjects.size()==0) { }
     }
 
     @Override
