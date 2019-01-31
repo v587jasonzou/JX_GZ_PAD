@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.schedulers.Schedulers;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -50,6 +50,7 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
  */
 public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPresenter> implements JXRecordProjectsContract.View {
 
+    public static final int pageSize = 20;
     @BindView(R.id.menu_tp)
     Toolbar menuTp;
     @BindView(R.id.etSearch)
@@ -58,7 +59,6 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
     RecyclerView rvProjects;
     @BindView(R.id.srl)
     SmartRefreshLayout srl;
-    public  static final int pageSize = 20;
     private String trainIDX;//机车IDX
     private String relationIdx;//菜单项relationIdx
     private ReqJXProjcetsParm parm;
@@ -95,22 +95,23 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     showLoading();
                     parm.setKeywords(v.getText().toString());
-                    mPresenter.queryJXProjects(parm,true);
+                    mPresenter.queryJXProjects(parm, true);
                 }
                 return false;
             }
         });
-        RxTextView.textChanges(etSearch).debounce(400, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).subscribe(charSequence -> {
+        RxTextView.textChanges(etSearch).debounce(400, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> {
             parm.setKeywords(charSequence.toString());
-            if (charSequence.length()==0) {//检索时，取消加载功能，只保留刷新功能
+            if (charSequence.length() == 0) {//检索时，取消加载功能，只保留刷新功能
                 srl.setEnableLoadMore(true);
-            }else {
+            } else {
                 srl.setEnableLoadMore(false);
             }
-            mPresenter.queryJXProjects(parm,true);
+            showLoading();
+            mPresenter.queryJXProjects(parm, true);
 
         });
 
@@ -119,7 +120,7 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(@NonNull View view, int viewType, @NonNull Object data, int position) {
-                Intent intent = new Intent(getBaseContext(),JXTasksOfProjectActivity.class);
+                Intent intent = new Intent(getBaseContext(), JXTasksOfProjectActivity.class);
                 intent.putExtra("workCardIdx", jxProjects.get(position).workCardIdx);//作业项目idx
                 ArmsUtils.startActivity(intent);
             }
@@ -131,19 +132,19 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 parm.setKeywords(etSearch.getText().toString());
                 parm.setPageNumber(1);
-                mPresenter.queryJXProjects(parm,true);
+                mPresenter.queryJXProjects(parm, true);
             }
         });
         srl.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                parm.setPageNumber(jxProjects.size()+1);
-                mPresenter.queryJXProjects(parm,false);
+                parm.setPageNumber(jxProjects.size() + 1);
+                mPresenter.queryJXProjects(parm, false);
             }
         });
 
         showLoading();
-        mPresenter.queryJXProjects(parm,true);
+        mPresenter.queryJXProjects(parm, true);
 
     }
 
@@ -188,21 +189,22 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
         if (isRefresh) {
             srl.finishRefresh();
             this.jxProjects.clear();
-        }else {
+        } else {
             srl.finishLoadMore();
-            if (jxProjects.size()==0) {
+            if (jxProjects.size() == 0) {
                 ToastUtils.showShort("没有更多数据了");
                 return;
             }
         }
         this.jxProjects.addAll(jxProjects);
         adapter.notifyDataSetChanged();
-//        if (jxProjects==null||jxProjects.size()==0) { }
+        //        if (jxProjects==null||jxProjects.size()==0) { }
     }
 
     @Override
     public void getProjectsFail(String message) {
         hideLoading();
+        srl.finishRefresh();
         ToastUtils.showShort("数据加载失败！" + message);
     }
 }
