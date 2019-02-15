@@ -48,6 +48,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation 'me.jessyan:arms:2.5.0'
     implementation project(":arms")
+    implementation project(':utilcode')
+    implementation project(path: ':lib-zxing')
     implementation 'me.jessyan:arms-imageloader-glide:2.5.0'
 
     //view
@@ -105,6 +107,6 @@ dependencies {
     implementation rootProject.ext.dependencies["retrofit-converter-scalars"]
     implementation rootProject.ext.dependencies["retrofit-adapter-rxjava2"]
 
-    implementation project(':utilcode')
-    implementation project(path: ':lib-zxing')
+    /*SwitchButton*/
+    implementation 'com.kyleduo.switchbutton:library:2.0.0'
 }

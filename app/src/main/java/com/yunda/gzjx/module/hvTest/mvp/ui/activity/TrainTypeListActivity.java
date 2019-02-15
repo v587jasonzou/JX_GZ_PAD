@@ -30,6 +30,7 @@ import com.yunda.gzjx.module.hvTest.entry.TrainType;
 import com.yunda.gzjx.module.hvTest.mvp.contract.TrainTypeListContract;
 import com.yunda.gzjx.module.hvTest.mvp.presenter.TrainTypeListPresenter;
 import com.yunda.gzjx.module.hvTest.mvp.ui.adapter.TrainTypeListAdapter;
+import com.yunda.gzjx.module.jcyj.mvp.ui.activity.BaseInfoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,16 +60,12 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
     TrainTypeListAdapter adapter;
     List<TrainType> mList = new ArrayList<>();
     List<TrainType> tempList = new ArrayList<>();
-//    private String workStationIdx;//
+    //    private String workStationIdx;//
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
-         //如找不到该类,请编译一下项目
-                DaggerTrainTypeListComponent.builder()
-                .view(this)
-                .appComponent(appComponent)
-                .build()
-                .inject(this);
+        //如找不到该类,请编译一下项目
+        DaggerTrainTypeListComponent.builder().view(this).appComponent(appComponent).build().inject(this);
     }
 
     @Override
@@ -79,7 +76,7 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
-//        workStationIdx = getIntent().getStringExtra(BundleConstant.WORK_STATION_IDX);
+        //        workStationIdx = getIntent().getStringExtra(BundleConstant.WORK_STATION_IDX);
         setSupportActionBar(menuTp);
         menuTp.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,13 +109,13 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
             public void call(CharSequence charSequence) {
                 mList.clear();
                 String str = charSequence.toString();
-                if(!StringUtils.isTrimEmpty(str)){
-                    for(TrainType bean:tempList){
-                        if((bean.trainNo!=null&&bean.trainNo.contains(str))||(bean.trainTypeShortname!=null&&bean.trainTypeShortname.contains(str))){
+                if (!StringUtils.isTrimEmpty(str)) {
+                    for (TrainType bean : tempList) {
+                        if ((bean.trainNo != null && bean.trainNo.contains(str)) || (bean.trainTypeShortname != null && bean.trainTypeShortname.contains(str))) {
                             mList.add(bean);
                         }
                     }
-                }else {
+                } else {
                     mList.addAll(tempList);
                 }
                 adapter.notifyDataSetChanged();
@@ -128,16 +125,15 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int viewType, Object data, int position) {
-                if(mList.get(position)!=null){
-                    Intent intent = new Intent(getBaseContext(),HVTestBaseInfoActivity.class);
-                    intent.putExtra("idx", mList.get(position).idx);
-                    /*intent.putExtra("idx",mList.get(position).getIdx());
-                    if(mList.get(position).getTrainNo()!=null){
-                        intent.putExtra("trainNo",mList.get(position).getTrainNo());
+                if (mList.get(position) != null) {
+                    String menu = getIntent().getStringExtra("menu");//菜单界面，选中的菜单
+                    Intent intent;
+                    if ("预检".equals(menu)) {
+                        intent = new Intent(getBaseContext(), BaseInfoActivity.class);
+                    } else {
+                        intent = new Intent(getBaseContext(), HVTestBaseInfoActivity.class);
                     }
-                    if(mList.get(position).getTrainTypeShortname()!=null){
-                        intent.putExtra("name",mList.get(position).getTrainTypeShortname());
-                    }*/
+                    intent.putExtra("idx", mList.get(position).idx);
                     ArmsUtils.startActivity(intent);
                 }
             }
@@ -176,7 +172,7 @@ public class TrainTypeListActivity extends BaseActivity<TrainTypeListPresenter> 
         svRefresh.finishRefresh();
         mList.clear();
         tempList.clear();
-        if(list!=null&&list.size()>0){
+        if (list != null && list.size() > 0) {
             mList.addAll(list);
             tempList.addAll(list);
         }

@@ -9,6 +9,11 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.util.SparseLongArray;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
@@ -70,8 +75,7 @@ public final class ObjectUtils {
             return true;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (obj instanceof android.util.LongSparseArray
-                    && ((android.util.LongSparseArray) obj).size() == 0) {
+            if (obj instanceof android.util.LongSparseArray && ((android.util.LongSparseArray) obj).size() == 0) {
                 return true;
             }
         }
@@ -191,9 +195,11 @@ public final class ObjectUtils {
      * @throws NullPointerException if any object is null in objects
      */
     public static void requireNonNull(final Object... objects) {
-        if (objects == null) throw new NullPointerException();
+        if (objects == null)
+            throw new NullPointerException();
         for (Object object : objects) {
-            if (object == null) throw new NullPointerException();
+            if (object == null)
+                throw new NullPointerException();
         }
     }
 
@@ -220,5 +226,30 @@ public final class ObjectUtils {
      */
     public static int hashCode(final Object o) {
         return o != null ? o.hashCode() : 0;
+    }
+
+    /**
+     * 类实例对象的"深度克隆"，序列化方式
+     *
+     * @param source
+     * @param <T>
+     * @return 对象的克隆
+     * @author 邹旭
+     */
+    public static <T> T copyObject(T source) {
+        T copy = null;
+        try {
+            // 写入字节流
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(source);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            copy = (T) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return copy;
     }
 }

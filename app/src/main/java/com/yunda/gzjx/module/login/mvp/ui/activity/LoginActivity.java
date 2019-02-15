@@ -97,8 +97,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         version.setText(BuildConfig.VERSION_NAME);
 
 
-        usernameText.setText("wangdajun");
-        passwordText.setText("000000");
+//        usernameText.setText("wangdajun");
+//        passwordText.setText("000000");
 
         popupMenu = new PopupMenu(this, inputAccount);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -190,7 +190,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void showMessage(@NonNull String message) {
         checkNotNull(message);
-//        ArmsUtils.snackbarText(message);
         ToastUtils.showShort(message);
     }
 

@@ -77,6 +77,9 @@
             android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".module.hvTest.mvp.ui.activity.FaultTaskListActivity"/>
         <activity android:name=".module.hvTest.mvp.ui.activity.SaveOrUpdateTicketActivity"/>
+        <activity android:name=".module.jcyj.mvp.ui.activity.BaseInfoActivity"/>
+        <activity android:name=".module.jcyj.mvp.ui.activity.PrecheckRecordsActivity"/>
+        <activity android:name=".module.jcyj.mvp.ui.activity.TrainPerformanceTestActivity"/>
     </application>
 
 </manifest>

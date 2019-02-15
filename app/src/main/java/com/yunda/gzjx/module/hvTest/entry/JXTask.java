@@ -27,9 +27,11 @@ public class JXTask {
     public String status;
     public String workEmpName;
     public String repairContent;
-    public String remarks;
+    public String workTaskName;
     public String workStepIdx;
-    public String repairResult;//当且仅当勾选"作业情况"中的内容时，赋值到此变量
+    public String workStepSeq;
+    public String remarks;
+    public String repairResult;//当且仅当勾选"作业情况"中的内容时，赋值到此变量(机车预检中：保存选中了"其它"时的录入文本)
     public List<Quality> qualityList;
     public List<DetectResult> detectResultList;
 

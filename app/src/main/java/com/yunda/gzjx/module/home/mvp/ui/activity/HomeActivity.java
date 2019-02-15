@@ -131,22 +131,12 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int viewType, Object data, int position) {
-//                if (SysInfo.menus.get(position).getMenu().equals("高压试验")) {
-//                    if (data instanceof MenuSimpleBean) {
-//                        MenuSimpleBean menu = (MenuSimpleBean) data;
-//                        curRelationIdx = menu.getRelationIdx();
-//                        curWorkStationName = menu.getMenu();
-//                        Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
-//                        //                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
-//                        ArmsUtils.startActivity(intent);
-//                    }
-//                }
-
                 if (data instanceof MenuSimpleBean) {
                     MenuSimpleBean menu = (MenuSimpleBean) data;
                     curRelationIdx = menu.getRelationIdx();
                     curWorkStationName = menu.getMenu();
                     Intent intent = new Intent(HomeActivity.this, TrainTypeListActivity.class);
+                    intent.putExtra("menu", menu.getMenu());
                     //                        intent.putExtra(BundleConstant.WORK_STATION_IDX, menu.getRelationIdx());//机车，对应工位idx
                     ArmsUtils.startActivity(intent);
                 }
@@ -181,11 +171,6 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         finish();
     }
 
-    @OnClick(R.id.tvChangeUser)
-    void ChangeUser() {
-
-    }
-
     @Override
     public void getMenuSuccess(List<MenuSimpleBean> menus) {
         hideLoading();
@@ -199,7 +184,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     }
 
     @OnClick(R.id.tvChangeUser)
-    void CheckUser() {
+    void ChangeUser() {
         new AlertDialog.Builder(this).setTitle("提示！").setMessage("确定退出当前用户？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

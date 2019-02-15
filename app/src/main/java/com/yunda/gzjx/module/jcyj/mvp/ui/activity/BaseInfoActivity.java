@@ -1,4 +1,4 @@
-package com.yunda.gzjx.module.hvTest.mvp.ui.activity;
+package com.yunda.gzjx.module.jcyj.mvp.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,10 +15,11 @@ import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 import com.yunda.gzjx.R;
 import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
-import com.yunda.gzjx.module.hvTest.di.component.DaggerHVTestBaseInfoComponent;
 import com.yunda.gzjx.module.hvTest.entry.TrainType;
-import com.yunda.gzjx.module.hvTest.mvp.contract.HVTestBaseInfoContract;
-import com.yunda.gzjx.module.hvTest.mvp.presenter.HVTestBaseInfoPresenter;
+import com.yunda.gzjx.module.hvTest.mvp.ui.activity.JXRecordProjectsActivity;
+import com.yunda.gzjx.module.jcyj.di.component.DaggerBaseInfoComponent;
+import com.yunda.gzjx.module.jcyj.mvp.contract.BaseInfoContract;
+import com.yunda.gzjx.module.jcyj.mvp.presenter.BaseInfoPresenter;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -30,11 +29,11 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
 
 /**
  * ================================================
- * Description: 高压试验 - 选择车型 - 机车基本信息
+ * Description:机车预检 - 基本信息
+ * <p>
  * ================================================
  */
-public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter> implements HVTestBaseInfoContract.View {
-
+public class BaseInfoActivity extends BaseActivity<BaseInfoPresenter> implements BaseInfoContract.View {
     private static String activityIdx;//
     private static String idx;//机车idx
     @BindView(R.id.menu_tp)
@@ -60,30 +59,21 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
     @BindView(R.id.progressUpload)
     TextView progressUpload;//过程报活
     private String curWorkStationName = "";
-
-    public static String getIdx() {
-        return idx;
-    }
-
-    public static String getActivityIdx() {
-        return activityIdx;
-    }
-
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
-        DaggerHVTestBaseInfoComponent //如找不到该类,请编译一下项目
+        DaggerBaseInfoComponent //如找不到该类,请编译一下项目
                 .builder().appComponent(appComponent).view(this).build().inject(this);
     }
 
     @Override
     public int initView(@Nullable Bundle savedInstanceState) {
-        return R.layout.activity_hvtest_base_info; //如果你不需要框架帮你设置 setContentView(id) 需要自行设置,请返回 0
+        return R.layout.activity_base_info; //如果你不需要框架帮你设置 setContentView(id) 需要自行设置,请返回 0
     }
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
         idx = getIntent().getStringExtra("idx");
-        setSupportActionBar(menuTp);
+//        setSupportActionBar(menuTp);
         menuTp.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,58 +122,39 @@ public class HVTestBaseInfoActivity extends BaseActivity<HVTestBaseInfoPresenter
 
     @OnClick(R.id.materialList)
     public void onMaterialListClicked() {
-        toMaterialListAct();
+        toJZGZAct();
     }
 
     @OnClick(R.id.progressUpload)
     public void onProgressUploadClicked() {
-        toFaultUploadAct();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_hv_test_baseinfo, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.jxRecords:
-                toJXProjectsListAct();
-                break;
-            case R.id.materialList:
-                toMaterialListAct();
-                break;
-            case R.id.progressUpload:
-                toFaultUploadAct();
-                break;
-        }
-        return true;
+        toPerformanceTestAct();
     }
 
     @Override
     public void toJXProjectsListAct() {
         Intent intent = new Intent(this, JXRecordProjectsActivity.class);
+        intent.putExtra("isJCYJ", "机车预检");
         intent.putExtra("trainIDX", idx);//机车IDX
-        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//机车IDX
+        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());
         intent.putExtra("trainTypeNo", trainTypeNo.getText().toString());
         ArmsUtils.startActivity(intent);
     }
 
     @Override
-    public void toMaterialListAct() {
-        Intent intent = new Intent(this, MaterialListActivity.class);
-        intent.putExtra("trainIDX", idx);//机车IDX
-        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//菜单项relationIdx
+    public void toJZGZAct() {
+        Intent intent = new Intent(this, TrainPerformanceTestActivity.class);
+        intent.putExtra("title", "机车加装改造");//机车IDX
+        intent.putExtra("workPlanIdx",idx);//机车IDX
+        intent.putExtra("decisionType",1);//类型：1.加装改造，2性能试验
         ArmsUtils.startActivity(intent);
     }
 
     @Override
-    public void toFaultUploadAct() {
-        Intent intent = new Intent(this, FaultTaskListActivity.class);
-        intent.putExtra("trainIDX", idx);//机车IDX
-        intent.putExtra("relationIdx", HomeActivity.getCurRelationIdx());//菜单项relationIdx
+    public void toPerformanceTestAct() {
+        Intent intent = new Intent(this, TrainPerformanceTestActivity.class);
+        intent.putExtra("title", "机车性能试验");//菜单项relationIdx
+        intent.putExtra("workPlanIdx",idx);//机车IDX
+        intent.putExtra("decisionType",2);//类型：1.加装改造，2性能试验
         ArmsUtils.startActivity(intent);
     }
 

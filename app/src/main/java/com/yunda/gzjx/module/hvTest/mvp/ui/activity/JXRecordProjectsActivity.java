@@ -31,6 +31,7 @@ import com.yunda.gzjx.module.hvTest.entry.ReqJXProjcetsParm;
 import com.yunda.gzjx.module.hvTest.mvp.contract.JXRecordProjectsContract;
 import com.yunda.gzjx.module.hvTest.mvp.presenter.JXRecordProjectsPresenter;
 import com.yunda.gzjx.module.hvTest.mvp.ui.adapter.JXProjectsAdapter;
+import com.yunda.gzjx.module.jcyj.mvp.ui.activity.PrecheckRecordsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +121,13 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
         adapter.setOnItemClickListener(new DefaultAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(@NonNull View view, int viewType, @NonNull Object data, int position) {
-                Intent intent = new Intent(getBaseContext(), JXTasksOfProjectActivity.class);
+                boolean isJCYJ = getIntent().getExtras().containsKey("isJCYJ");//机车预检页面传入"isJCYJ"参数
+                Intent intent;
+                if (isJCYJ) {
+                    intent = new Intent(getBaseContext(), PrecheckRecordsActivity.class);
+                } else {
+                    intent = new Intent(getBaseContext(), JXTasksOfProjectActivity.class);
+                }
                 intent.putExtra("workCardIdx", jxProjects.get(position).workCardIdx);//作业项目idx
                 ArmsUtils.startActivity(intent);
             }

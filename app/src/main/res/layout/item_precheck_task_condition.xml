@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="5dp"
+    >
+
+    <ImageView
+        android:id="@+id/cb_condition"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="top"
+        android:padding="2dp"
+        android:src="@drawable/rec_checkbox_check"/>
+
+    <TextView
+        android:id="@+id/tv_condition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLength="10"
+        android:layout_gravity="top"
+        android:minHeight="25dp"
+        android:singleLine="true"
+        android:text="或绝缘测试仪sdfasdfasadf"/>
+
+    <EditText
+        android:id="@+id/etComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:textSize="14sp"
+        android:background="@drawable/bg_edittext_normal"
+        android:padding="5dp"
+        android:text="2500V兆欧表（或绝缘测试仪）测量车顶原边电路（受电弓、高压隔离开关，高压绝缘子、避雷器、接地开关）对地绝缘电阻值≥5MΩ"
+        />
+</LinearLayout>
