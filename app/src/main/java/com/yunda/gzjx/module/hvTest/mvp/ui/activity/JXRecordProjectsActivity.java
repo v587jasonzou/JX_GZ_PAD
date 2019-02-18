@@ -123,8 +123,9 @@ public class JXRecordProjectsActivity extends BaseActivity<JXRecordProjectsPrese
             public void onItemClick(@NonNull View view, int viewType, @NonNull Object data, int position) {
                 boolean isJCYJ = getIntent().getExtras().containsKey("isJCYJ");//机车预检页面传入"isJCYJ"参数
                 Intent intent;
-                if (isJCYJ) {
+                if (isJCYJ) {//是否是"机车预检"
                     intent = new Intent(getBaseContext(), PrecheckRecordsActivity.class);
+                    intent.putExtra("title", ((JXProject) data).workCardName);
                 } else {
                     intent = new Intent(getBaseContext(), JXTasksOfProjectActivity.class);
                 }

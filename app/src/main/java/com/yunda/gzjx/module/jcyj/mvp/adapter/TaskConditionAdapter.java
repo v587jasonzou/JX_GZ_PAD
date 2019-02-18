@@ -33,6 +33,7 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
     public TaskConditionAdapter(JXTask jxTask, List<JXTask.DetectResult> infos) {
         super(infos);
         this.jxTask = jxTask;
+        setDefaultChoose(infos);
     }
 
     @NonNull
@@ -63,8 +64,26 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
         }
     }
 
-    public void updateData(List<JXTask.DetectResult> detectResultList) {
-        mInfos = detectResultList;
+//    public void updateData(List<JXTask.DetectResult> detectResultList) {
+//        mInfos = detectResultList;
+//        setDefaultChoose(detectResultList);
+//    }
+
+    private void setDefaultChoose(List<JXTask.DetectResult> detectResultList) {
+        boolean hasSet = false;
+        for (JXTask.DetectResult detectResult : detectResultList) {
+            if (detectResult.detectResult != null && !detectResult.detectResult.trim().isEmpty()) {
+                hasSet = true;
+            }
+        }
+        if (!hasSet) {
+            for (JXTask.DetectResult detectResult : detectResultList) {//默认选中良好
+                if ("良好".equals(detectResult.detectItemContent)) {
+                    detectResult.detectResult = detectResult.detectItemContent;
+                    hasSet = true;
+                }
+            }
+        }
     }
 
     /**
@@ -158,7 +177,7 @@ public class TaskConditionAdapter extends DefaultAdapter<JXTask.DetectResult> {
             if (!TextUtils.isEmpty(data.detectResult.replaceAll(" ", ""))) {
                 cbCondition.setTag(true);
                 cbCondition.setImageResource(R.drawable.rec_checkbox_check);
-                if (data.detectResult.equals("其它")||data.detectResult.equals("其他")) {
+                if (data.detectResult.equals("其它") || data.detectResult.equals("其他")) {
                     etComment.setVisibility(View.VISIBLE);
                     etComment.setText(jxTask.repairResult);//选择的"其它",回显 检查结果
                 }

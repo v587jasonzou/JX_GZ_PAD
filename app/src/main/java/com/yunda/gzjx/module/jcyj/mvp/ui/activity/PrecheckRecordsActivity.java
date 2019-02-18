@@ -75,6 +75,7 @@ public class PrecheckRecordsActivity extends BaseActivity<PrecheckRecordsPresent
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
         workCardIdx = getIntent().getStringExtra("workCardIdx");
+        String title = getIntent().getStringExtra("title");
         setSupportActionBar(menuTp);
         menuTp.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +83,7 @@ public class PrecheckRecordsActivity extends BaseActivity<PrecheckRecordsPresent
                 finish();
             }
         });
-        menuTp.setTitle("预检记录");
+        menuTp.setTitle(title);
 
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
