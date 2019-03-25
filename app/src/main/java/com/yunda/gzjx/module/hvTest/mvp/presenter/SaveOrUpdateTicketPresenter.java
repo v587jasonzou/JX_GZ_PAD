@@ -9,7 +9,10 @@ import com.jess.arms.mvp.BasePresenter;
 import com.jess.arms.utils.RxLifecycleUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.yunda.gzjx.module.hvTest.entry.FaultTask;
+import com.yunda.gzjx.module.hvTest.entry.ZRGWEntity;
 import com.yunda.gzjx.module.hvTest.mvp.contract.SaveOrUpdateTicketContract;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -49,6 +52,30 @@ public class SaveOrUpdateTicketPresenter extends BasePresenter<SaveOrUpdateTicke
         },throwable -> {
             throwable.printStackTrace();
             mRootView.saveOrUpdateFail(throwable.getMessage());
+        });
+    }
+
+    /**
+     * 获取责任工位，排除"预检"
+     *
+     */
+    public void getZRGW() {
+        mModel.getZRGW().compose(RxLifecycleUtils.bindUntilEvent(mRootView,ActivityEvent.DESTROY)).observeOn(AndroidSchedulers.mainThread()).subscribe(res->{
+            if (res.getSuccess()) {
+                List<ZRGWEntity> list = res.getData();
+                for (int i = list.size() - 1; i >= 0; i--) {
+                    ZRGWEntity tmp = list.get(i);
+                    if ("预检".equals(tmp.relationName)||"".equals(tmp.relationIdx)) {
+                        list.remove(i);
+                    }
+                }
+                mRootView.getZRGWSuccess(list,res.getMessage());
+            }else {
+                mRootView.getZRGWFail(res.getMessage());
+            }
+        },throwable -> {
+            throwable.printStackTrace();
+            mRootView.getZRGWFail(throwable.getMessage());
         });
     }
 

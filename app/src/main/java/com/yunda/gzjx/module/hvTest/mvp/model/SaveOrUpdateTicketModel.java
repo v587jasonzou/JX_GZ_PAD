@@ -9,6 +9,7 @@ import com.jess.arms.mvp.BaseModel;
 import com.yunda.gzjx.entity.BaseResponse;
 import com.yunda.gzjx.module.hvTest.Api;
 import com.yunda.gzjx.module.hvTest.entry.FaultTask;
+import com.yunda.gzjx.module.hvTest.entry.ZRGWEntity;
 import com.yunda.gzjx.module.hvTest.mvp.contract.SaveOrUpdateTicketContract;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -55,5 +57,10 @@ public class SaveOrUpdateTicketModel extends BaseModel implements SaveOrUpdateTi
         List<FaultTask> list = new ArrayList<>();
         list.add(ticketNew);
         return mRepositoryManager.obtainRetrofitService(Api.class).saveOrUpdateTicket(new Gson().toJson(list));
+    }
+
+    @Override
+    public Observable<BaseResponse<List<ZRGWEntity>>> getZRGW() {
+        return mRepositoryManager.obtainRetrofitService(Api.class).getZRGW().subscribeOn(Schedulers.io());
     }
 }

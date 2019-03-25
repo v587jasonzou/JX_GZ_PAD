@@ -20,7 +20,6 @@ public class FaultTask {
     public String handleTime="";//处理时间
     public String ticketWorkStationIdx = "";//提票工位idx
     public String ticketWorkStationName = "";//提票工位名称
-    public String handleWorkStationIdx = "";//处理工位idx
     public String handleWorkStationName = "";//处理工位名称
     public String ticketStaionName = "";//提票工位名称
     public String createrName = "";
@@ -41,6 +40,7 @@ public class FaultTask {
     public String workPlanIdx="";
     public String creater="";
     public String workStationName="";//责任工位
+    public String workStationIdx = "";//处理工位idx
 
     public String updateTime = "";//更新时间
     public String updator = "";//更新人Id

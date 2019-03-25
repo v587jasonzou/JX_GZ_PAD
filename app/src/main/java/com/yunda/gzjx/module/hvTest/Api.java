@@ -7,6 +7,7 @@ import com.yunda.gzjx.module.hvTest.entry.JXTask;
 import com.yunda.gzjx.module.hvTest.entry.Material;
 import com.yunda.gzjx.module.hvTest.entry.MaterialSpecInfo;
 import com.yunda.gzjx.module.hvTest.entry.TrainType;
+import com.yunda.gzjx.module.hvTest.entry.ZRGWEntity;
 
 import java.util.List;
 
@@ -149,4 +150,7 @@ public interface Api {
     @FormUrlEncoded
     @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8") //添加
     Observable<BaseResponse<List<FaultTask>>> saveOrUpdateTicket(@Field("ticketJSONStr") String ticketIdx);
+
+    @GET("GZJX/getWorkStationList/queryList.action")
+    Observable<BaseResponse<List<ZRGWEntity>>> getZRGW();
 }

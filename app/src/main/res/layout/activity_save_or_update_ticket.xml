@@ -85,10 +85,12 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/text_size_16"/>
 
-                <EditText
+                <TextView
                     android:id="@+id/et_work_station_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:drawableRight="@mipmap/arrow_down"
                     android:background="@drawable/bg_table_grid"
                     android:minEms="10"
                     android:padding="5dp"

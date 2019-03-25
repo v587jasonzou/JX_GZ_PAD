@@ -1,13 +1,18 @@
 package com.yunda.gzjx.module.hvTest.mvp.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,6 +34,7 @@ import com.yunda.gzjx.app.utils.ProgressDialogUtils;
 import com.yunda.gzjx.module.home.mvp.ui.activity.HomeActivity;
 import com.yunda.gzjx.module.hvTest.di.component.DaggerSaveOrUpdateTicketComponent;
 import com.yunda.gzjx.module.hvTest.entry.FaultTask;
+import com.yunda.gzjx.module.hvTest.entry.ZRGWEntity;
 import com.yunda.gzjx.module.hvTest.mvp.contract.SaveOrUpdateTicketContract;
 import com.yunda.gzjx.module.hvTest.mvp.presenter.SaveOrUpdateTicketPresenter;
 
@@ -61,7 +67,7 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
     @BindView(R.id.et_ticket_location)
     EditText etTicketLocation;
     @BindView(R.id.et_work_station_name)
-    EditText etWorkStationName;
+    TextView etWorkStationName;
     @BindView(R.id.et_create_ticket_man)
     TextView tvCreateTicketMan;
     @BindView(R.id.et_ticket_content)
@@ -118,6 +124,9 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
     private String trainIdx;//机车idx
     private String relationIdx;//工位idx
     private Subscription subcription;
+    private ZRGWEntity curZRGW;
+    private List<ZRGWEntity> zrgwDataList = new ArrayList<>();
+    private PopupMenu zrgwPopMenu;
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -139,7 +148,38 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
         trainIdx = getIntent().getStringExtra("trainIdx");
         relationIdx = getIntent().getStringExtra("relationIdx");
 
+        showLoading();
+        mPresenter.getZRGW();
+    }
+
+    @Override
+    public void getZRGWSuccess(List<ZRGWEntity> list, String message) {
+        hideLoading();
+        //责任工位
+        zrgwDataList.clear();
+        zrgwDataList.addAll(list);
+        zrgwPopMenu = new PopupMenu(this, etWorkStationName);
+        zrgwPopMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                etWorkStationName.setText(item.getTitle());
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(etWorkStationName.getWindowToken(), 0);
+                }
+                zrgwPopMenu.dismiss();
+                curZRGW = zrgwDataList.get(item.getItemId());
+                return false;
+            }
+        });
+        /*初始化数据获取成功，才加载其他数据*/
         refTicket(FaultTaskListActivity.getCurToUpdateTicket());
+    }
+
+    @Override
+    public void getZRGWFail(String message) {
+        hideLoading();
+        ToastUtils.showShort("责任工位加载失败，请重试...");
     }
 
     @Override
@@ -364,7 +404,7 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
 
     }
 
-    @OnClick({R.id.btn_pre_ticket, R.id.btn_save_or_update, R.id.btn_next_ticket, R.id.tv_title_work_leader, R.id.tv_title_quality_check, R.id.tv_title_check_and_accept})
+    @OnClick({R.id.btn_pre_ticket, R.id.btn_save_or_update, R.id.btn_next_ticket, R.id.tv_title_work_leader, R.id.tv_title_quality_check, R.id.tv_title_check_and_accept,R.id.et_work_station_name})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_pre_ticket:
@@ -433,6 +473,17 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
                     }
                 }
                 break;
+            case R.id.et_work_station_name:
+                if (zrgwDataList.size() > 0) {
+                    Menu menuMore = zrgwPopMenu.getMenu();
+                    menuMore.clear();
+                    int size = zrgwDataList.size();
+                    for (int i = 0; i < size; i++) {
+                        menuMore.add(Menu.NONE, i, i, zrgwDataList.get(i).relationName);
+                    }
+                    zrgwPopMenu.show();
+                }
+                break;
         }
     }
 
@@ -463,8 +514,12 @@ public class SaveOrUpdateTicketActivity extends BaseActivity<SaveOrUpdateTicketP
         local = etTicketLocation.getText().toString();
         curTicket.ticketLocation = StringUtils.isSpace(local) ? "" : local;
         //责任单位
-        local = etWorkStationName.getText().toString();
-        curTicket.workStationName = StringUtils.isSpace(local) ? "" : local;
+//        local = etWorkStationName.getText().toString();
+//        curTicket.workStationName = StringUtils.isSpace(local) ? "" : local;
+        if (curZRGW != null) {
+            curTicket.workStationName = curZRGW.relationName;
+            curTicket.workStationIdx = curZRGW.relationIdx;
+        }
         //报活内容
         local = etTicketContent.getText().toString();
         curTicket.ticketContent = StringUtils.isSpace(local) ? "" : local;
